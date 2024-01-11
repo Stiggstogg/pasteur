@@ -27,7 +27,7 @@ export default class HomeScene extends Phaser.Scene {
     init(): void {
 
         // title text
-        this.titleText = 'My Game';
+        this.titleText = 'Pasteur the Game';
 
         // menu entries
         this.menuEntries = [
@@ -42,27 +42,27 @@ export default class HomeScene extends Phaser.Scene {
         // styles of the title menu entries (active or inactive) and instruction text
         this.titleStyle = {
             fontFamily: 'Orbitron',
-            fontSize: '70px',
+            fontSize: '40px',
             color: '#FFFF00',
             fontStyle: 'bold'
         }
 
         this.inactiveStyle = {
             fontFamily: 'Arial',
-            fontSize: '40px',
+            fontSize: '20px',
             color: '#ffff00',
             fontStyle: '',
         }
 
         this.activeStyle = {
             fontFamily: 'Arial',
-            fontSize: '50px',
+            fontSize: '24px',
             color: '#0000ff',
             fontStyle: 'bold',
         }
 
         this.instructionStyle = {
-            font: '20px Arial',
+            font: '12px Arial',
             color: '#27ff00'
         }
 

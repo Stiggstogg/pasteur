@@ -1,7 +1,11 @@
 import Phaser from 'phaser';
-import spongeImg from '../assets/images/sponge.jpeg';
 import WebFontFile from "../helper/WebFontFile";
 import gameOptions from "../helper/gameOptions";
+import floorImg from '../assets/images/floor.png';
+import tableImg from '../assets/images/table.png';
+import headsImg from '../assets/images/heads.png';
+import bowlLeftImg from '../assets/images/bowl-left.gif';
+import bowlRightImg from '../assets/images/bowl-right.gif';
 
 // "Loading" scene: Loads all assets and shows a progress bar while loading
 export default class LoadingScene extends Phaser.Scene {
@@ -24,11 +28,11 @@ export default class LoadingScene extends Phaser.Scene {
     preload(): void {
 
         // show logo
-        this.add.sprite(gameOptions.gameWidth/2, gameOptions.gameHeight/2, 'logo').setScale(1, 1); // logo is already preloaded in 'Boot' scene
+        this.add.sprite(gameOptions.gameWidth/2, gameOptions.gameHeight/2, 'logo').setScale(0.25, 0.25); // logo is already preloaded in 'Boot' scene
 
         // text
-        this.add.text(gameOptions.gameWidth/2, gameOptions.gameHeight * 0.20, 'CLOWNGAMING', {fontSize: '70px', color: '#FFFF00', fontStyle: 'bold'}).setOrigin(0.5);
-        this.add.text(gameOptions.gameWidth/2, gameOptions.gameHeight * 0.73, 'Loading', {fontSize: '30px', color: '#27FF00'}).setOrigin(0.5);
+        this.add.text(gameOptions.gameWidth/2, gameOptions.gameHeight * 0.20, 'CLOWNGAMING', {fontSize: '40px', color: '#FFFF00', fontStyle: 'bold'}).setOrigin(0.5);
+        this.add.text(gameOptions.gameWidth/2, gameOptions.gameHeight * 0.73, 'Loading', {fontSize: '24px', color: '#27FF00'}).setOrigin(0.5);
 
         // progress bar background (e.g grey)
         const bgBar = this.add.graphics();
@@ -59,7 +63,14 @@ export default class LoadingScene extends Phaser.Scene {
         }, this);
 
         // load images
-        this.load.image('sponge', spongeImg);
+        this.load.image('floor', floorImg);
+        this.load.image('table', tableImg);
+        this.load.image('bowlLeft', bowlLeftImg);
+        this.load.image('bowlRight', bowlRightImg);
+
+
+        // spritesheets
+        this.load.spritesheet('head', headsImg, {frameWidth: 58, frameHeight: 83});
 
         // load audio
         //this.load.audio('miss', 'assets/audio/Pew.mp3');
@@ -71,7 +82,8 @@ export default class LoadingScene extends Phaser.Scene {
 
     // Add the animations and change to "Home" scene, directly after loading
     create() {
-        this.scene.start('Home');
+        this.scene.start('Game');       // TODO: Remove after testing (Skips the menu screen)
+        //this.scene.start('Home');
     }
 
 }

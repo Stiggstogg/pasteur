@@ -14,8 +14,8 @@ class GameOptions {
         // ---------------------
 
         // Width and height of the game (canvas)
-        this.gameWidth = 800;
-        this.gameHeight = 600;
+        this.gameWidth = 425;
+        this.gameHeight = 240;
 
         // ---------------------
         // Text styles

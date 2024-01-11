@@ -1,12 +1,13 @@
 import Phaser from 'phaser';
 
-import Sponge from '../sprites/Sponge'
 import gameOptions from "../helper/gameOptions";
 
 // "Game" scene: Scene for the main game
 export default class GameScene extends Phaser.Scene {
 
-    private sponge!: Sponge;
+    private head!: Phaser.GameObjects.Image;
+    private bowlLeft!: Phaser.GameObjects.Image;
+    private bowlRight!: Phaser.GameObjects.Image;
 
     // Constructor
     constructor() {
@@ -28,16 +29,25 @@ export default class GameScene extends Phaser.Scene {
     // Creates all objects of this scene
     create(): void {
 
-        // sprite
-        this.sponge = this.add.existing(new Sponge(this, 100, 100));
+        // scene setup (background, table, etc,...)
+        this.add.image(0, 0, 'floor').setOrigin(0);
+        this.add.image(0, 0, 'table').setOrigin(0);
+        this.add.rectangle(0, gameOptions.gameHeight, gameOptions.gameWidth, 0.2 * gameOptions.gameHeight, 0x333399).setOrigin(0, 1);
+        this.head = this.add.image(gameOptions.gameWidth * 0.5, gameOptions.gameHeight * 0.82, 'head', 0);
 
-        // Instruction / press key text
-        this.add.text(gameOptions.gameWidth / 2, gameOptions.gameHeight - 46,
-            'Use arrow keys or W, A, S, D to move Sponge Bob around\n' +
-            'Click with the mouse on it to finish the game', {
-                font: '20px Arial',
-                color: '#27ff00'
-            }).setOrigin(0.5);
+        this.bowlLeft = this.add.sprite(gameOptions.gameWidth * 0.17, gameOptions.gameHeight * 0.53, 'bowlLeft').setInteractive();
+        this.bowlRight = this.add.sprite(gameOptions.gameWidth * 0.85, gameOptions.gameHeight * 0.53, 'bowlRight').setInteractive();
+
+        // setup events
+        this.bowlLeft.on('pointerdown', function(this: GameScene) {
+            console.log('Left bowl was clicked!');      // TODO: Add proper function
+            this.head.setFrame(0);
+        }, this);
+
+        this.bowlRight.on('pointerdown', function(this: GameScene) {
+            console.log('Right bowl was clicked!');      // TODO: Add proper function
+            this.head.setFrame(1);
+        }, this);
 
         // Add keyboard inputs
         this.addKeys();
@@ -54,25 +64,15 @@ export default class GameScene extends Phaser.Scene {
     addKeys(): void {
 
         // up and down keys (moving the selection of the entries)
-        this.input.keyboard!.addKey('Down').on('down', function(this: GameScene) { this.sponge.move('down') }, this);
-        this.input.keyboard!.addKey('S').on('down', function(this: GameScene) { this.sponge.move('down') }, this);
-        this.input.keyboard!.addKey('Up').on('down', function(this: GameScene) { this.sponge.move('up') }, this);
-        this.input.keyboard!.addKey('W').on('down', function(this: GameScene) { this.sponge.move('up') }, this);
-        this.input.keyboard!.addKey('Left').on('down', function(this: GameScene) { this.sponge.move('left') }, this);
-        this.input.keyboard!.addKey('A').on('down', function(this: GameScene) { this.sponge.move('left') }, this);
-        this.input.keyboard!.addKey('Right').on('down', function(this: GameScene) { this.sponge.move('right') }, this);
-        this.input.keyboard!.addKey('D').on('down', function(this: GameScene) { this.sponge.move('right') }, this);
-
-        // enter and space key (confirming a selection)
-        this.input.keyboard!.addKey('Enter').on('down', function(this: GameScene) { this.spaceEnterKey() }, this);
-        this.input.keyboard!.addKey('Space').on('down', function(this: GameScene) { this.spaceEnterKey() }, this);
-
-    }
-
-    // Action which happens when the enter or space key is pressed.
-    spaceEnterKey(): void {
-
-        console.log('Space or Enter key pressed!');
+        this.input.keyboard!.addKey('Left').on('down', function(this: GameScene) {
+            this.head.setFrame(0)
+        }, this);
+        this.input.keyboard!.addKey('Down').on('down', function(this: GameScene) {
+            this.head.setFrame(1)
+        }, this);
+        this.input.keyboard!.addKey('Right').on('down', function(this: GameScene) {
+            this.head.setFrame(2)
+        }, this);
 
     }
 

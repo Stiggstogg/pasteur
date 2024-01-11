@@ -15,12 +15,12 @@ const config: Phaser.Types.Core.GameConfig = {
     width: gameOptions.gameWidth,
     height: gameOptions.gameHeight,
     scene: [BootScene, LoadingScene, HomeScene, GameScene],
-    title: 'My Game',                  // Shown in the console
+    title: 'Pasteur the Game',                  // Shown in the console
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    pixelArt: false,                                     // if true pixel perfect rendering is used
+    pixelArt: true,                                     // if true pixel perfect rendering is used
     backgroundColor: '#000000'
 };
 
