@@ -1,11 +1,18 @@
 import Phaser from 'phaser';
 import WebFontFile from "../helper/WebFontFile";
 import gameOptions from "../helper/gameOptions";
+
+// images
 import floorImg from '../assets/images/floor.png';
 import tableImg from '../assets/images/table.png';
 import headsImg from '../assets/images/heads.png';
 import bowlLeftImg from '../assets/images/bowl-left.gif';
 import bowlRightImg from '../assets/images/bowl-right.gif';
+
+// audio
+
+// json
+import nodesAndFacesJson from '../assets/json/nodesAndFaces.json';
 
 // "Loading" scene: Loads all assets and shows a progress bar while loading
 export default class LoadingScene extends Phaser.Scene {
@@ -74,6 +81,9 @@ export default class LoadingScene extends Phaser.Scene {
 
         // load audio
         //this.load.audio('miss', 'assets/audio/Pew.mp3');
+
+        // load json
+        this.load.json('nodesAndFaces', nodesAndFacesJson);
 
         // load fonts (with "webfontloader")
         this.load.addFile(new WebFontFile(this.load, 'Orbitron'));

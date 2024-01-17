@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 
 import gameOptions from "../helper/gameOptions";
+import Crystal from "../sprites/Crystal";
 
 // "Game" scene: Scene for the main game
 export default class GameScene extends Phaser.Scene {
@@ -48,6 +49,9 @@ export default class GameScene extends Phaser.Scene {
             console.log('Right bowl was clicked!');      // TODO: Add proper function
             this.head.setFrame(1);
         }, this);
+
+        // Crystal test
+        this.add.existing(new Crystal(this));
 
         // Add keyboard inputs
         this.addKeys();
