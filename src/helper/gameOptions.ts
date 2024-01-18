@@ -48,6 +48,7 @@ class GameOptions {
 
         this.weightRange = {min: 0.75, max: 1.25};                              // range for the weight
         this.tableRange = {minX: 0.28, maxX: 0.72, minY: 0.06, maxY: 0.58};    // range where crystals are placed on the table
+        this.tableRange = {minX: 0.5, maxX: 0.5, minY: 0.35, maxY: 0.35};         // TODO: Remove, this is just for testing
 
         // ------------------------
         // Crystal style

@@ -9,6 +9,7 @@ export default class GameScene extends Phaser.Scene {
     private head!: Phaser.GameObjects.Image;
     private bowlLeft!: Phaser.GameObjects.Image;
     private bowlRight!: Phaser.GameObjects.Image;
+    private theCrystal!: Crystal;  // TODO: Remove later, just for testing
 
     // Constructor
     constructor() {
@@ -51,7 +52,7 @@ export default class GameScene extends Phaser.Scene {
         }, this);
 
         // Crystal test
-        this.add.existing(new Crystal(this));
+        this.theCrystal = this.add.existing(new Crystal(this));
 
         // Add keyboard inputs
         this.addKeys();
@@ -61,21 +62,27 @@ export default class GameScene extends Phaser.Scene {
     // Update function for the game loop.
     update(_time: number, _delta: number): void {       // remove underscore if time and delta is needed
 
+        this.theCrystal.update();
 
     }
 
     // Add keyboard input to the scene.
     addKeys(): void {
 
+        const rotationAngle = Math.PI/10;
+
         // up and down keys (moving the selection of the entries)
         this.input.keyboard!.addKey('Left').on('down', function(this: GameScene) {
-            this.head.setFrame(0)
-        }, this);
-        this.input.keyboard!.addKey('Down').on('down', function(this: GameScene) {
-            this.head.setFrame(1)
+            this.theCrystal.rotate(0, -rotationAngle);
         }, this);
         this.input.keyboard!.addKey('Right').on('down', function(this: GameScene) {
-            this.head.setFrame(2)
+            this.theCrystal.rotate(0, +rotationAngle);
+        }, this);
+        this.input.keyboard!.addKey('Up').on('down', function(this: GameScene) {
+            this.theCrystal.rotate(-rotationAngle, 0);
+        }, this);
+        this.input.keyboard!.addKey('Down').on('down', function(this: GameScene) {
+            this.theCrystal.rotate(rotationAngle, 0);
         }, this);
 
     }

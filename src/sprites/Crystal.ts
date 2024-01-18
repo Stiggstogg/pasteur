@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import gameOptions from '../helper/gameOptions';
 import {CrystalData, CrystalEnantiomer, CrystalLocation} from "../helper/types";
+import {mat4, vec3} from 'gl-matrix';           // library for coordinate transformations (in this case rotations)
 
 // Crystal class
 export default class Crystal extends Phaser.GameObjects.Container {
@@ -35,24 +36,41 @@ export default class Crystal extends Phaser.GameObjects.Container {
         this.initialFacesSetup();       // initial setup
         this.updateFaces();             // update them
 
-        // Create crystal (one graphics object for each face of the crystal)
+    }
+
+    update() {
+
+        super.update();
+
+        this.updateFaces();
 
     }
 
     // create one face of the crystal and add it to the container
-    updateFaces() {
+    private updateFaces() {
+
+        // rotate all nodes
+        const coordinatesNodesRotated = this.rotateCoordinates(this.nodesAndFaces.coordinatesNodes, this.rotX, this.rotY, 0);      // get the nodes and rotate the coordinates
 
         for (let i = 0; i < this.nodesAndFaces.faceNodes.length; i++) {
 
             let face = this.getAt(i) as Phaser.GameObjects.Graphics;    // get current face graphics (needs to be done like that otherwise you get some Typescript errors
-            let faceNodes = this.nodesAndFaces.faceNodes[i];        // get all phase nodes of this face
+            let faceNodes = this.nodesAndFaces.faceNodes[i];        // get all phase nodes of this face and rotate them
 
+            face.clear();           // clear the graphics object (face)
+
+            // set the style of the line and fill
+            face.lineStyle(gameOptions.lineWidth, gameOptions.lineColor, gameOptions.lineAlpha);
+            face.fillStyle(gameOptions.faceColor, gameOptions.faceAlpha);
+
+            // begin a path
             face.beginPath();
 
+            // draw a line from one node to the other (in order) for all nodes involved in this face
             for (let j = 0; j < faceNodes.length; j++) {
 
-                let coordinateX = this.nodesAndFaces.coordinatesNodes[faceNodes[j]][0] * gameOptions.tableCrystalSize;  // get x coordinate of node
-                let coordinateY = this.nodesAndFaces.coordinatesNodes[faceNodes[j]][1] * gameOptions.tableCrystalSize;  // get y coordinate of node
+                let coordinateX = coordinatesNodesRotated[faceNodes[j]][0] * gameOptions.tableCrystalSize;  // get x coordinate of node
+                let coordinateY = coordinatesNodesRotated[faceNodes[j]][1] * gameOptions.tableCrystalSize;  // get y coordinate of node
 
                 if (j == 0) {
                     face.moveTo(coordinateX, coordinateY);  // first node
@@ -71,20 +89,43 @@ export default class Crystal extends Phaser.GameObjects.Container {
 
     }
 
-    // initial setup of the faces (create empty graphics objects with options and add them to the container)
-    initialFacesSetup() {
+    // rotate the crystal
+    public rotate(deltaX: number, deltaY: number) {
+
+        this.rotX += deltaX;
+        this.rotY += deltaY;
+
+    }
+
+    // initial setup of the faces (create empty graphics objects and add them to the container)
+    private initialFacesSetup() {
 
         for (let i = 0; i < this.nodesAndFaces.faceNodes.length; i++) {
 
             const face = this.scene.add.graphics();
 
-            // set the style of the graphic object
-            face.lineStyle(gameOptions.lineWidth, gameOptions.lineColor, gameOptions.lineAlpha);
-            face.fillStyle(gameOptions.faceColor, gameOptions.faceAlpha);
-
             this.add(face);     // add the graphics to the container
 
         }
+
+    }
+
+    // Mathematical function to rotate all nodes coordinates around x, y and z axis
+    private rotateCoordinates(coordinates: number[][], angleX: number, angleY: number, angleZ: number): number[][] {
+
+        // gl-matrix library is used for this!
+
+        const rotationMatrix = mat4.create();                               // create an identity matrix, eventhough a 3x3 matrix would be enough we use here a 4x4 (mat4) as this is commonly used for transformations. This would basically also allow for translational
+        mat4.rotate(rotationMatrix, rotationMatrix, angleX, [1, 0, 0]);         // rotate the identity matrix around the x-axis (input and output is the same)
+        mat4.rotate(rotationMatrix, rotationMatrix, angleY, [0, 1, 0]);         // rotate the previously rotated matrix around the y-axis
+        mat4.rotate(rotationMatrix, rotationMatrix, angleZ, [0, 0, 1]);         // rotate the previously rotated matrix around the z-axis
+
+        return coordinates.map((node: number[]) => {                    // "map" creates a new array with the result of calling a function to every element (in this case the x, y and z coordinates of a node) in the array
+                const vector = vec3.fromValues(node[0], node[1], node[2]);                          // create a temporary vec3 (vector) element out of the coordinates
+                vec3.transformMat4(vector, vector, rotationMatrix);                                         // transform the vector using the rotation matrix
+                return [vector[0], vector[1], vector[2]];
+            }
+        );
 
     }
 
