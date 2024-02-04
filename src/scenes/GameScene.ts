@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import * as THREE from 'three';
 
 import gameOptions from "../helper/gameOptions";
 import Crystal from "../sprites/Crystal";
@@ -10,6 +11,8 @@ export default class GameScene extends Phaser.Scene {
     private bowlLeft!: Phaser.GameObjects.Image;
     private bowlRight!: Phaser.GameObjects.Image;
     private theCrystal!: Crystal;  // TODO: Remove later, just for testing
+    private crystal3D!: THREE.Mesh;
+    private crystal3Dlines!: THREE.LineSegments;
 
     // Constructor
     constructor() {
@@ -52,38 +55,122 @@ export default class GameScene extends Phaser.Scene {
         }, this);
 
         // Crystal test
-        this.theCrystal = this.add.existing(new Crystal(this));
+        //this.theCrystal = this.add.existing(new Crystal(this));
+
+        // Create 3D crystal
+        this.createCrystal();
 
         // Add keyboard inputs
         this.addKeys();
+
+        this.scale.on('resize', () => {
+
+
+
+        },this);
 
     }
 
     // Update function for the game loop.
     update(_time: number, _delta: number): void {       // remove underscore if time and delta is needed
 
-        this.theCrystal.update();
+        //this.theCrystal.update();
 
     }
 
     // Add keyboard input to the scene.
     addKeys(): void {
 
-        const rotationAngle = Math.PI/10;
+        const rotationAngle = Math.PI*0.05;
 
         // up and down keys (moving the selection of the entries)
         this.input.keyboard!.addKey('Left').on('down', function(this: GameScene) {
-            this.theCrystal.rotate(0, -rotationAngle);
+            //this.theCrystal.rotate(0, -rotationAngle);
+            this.crystal3D.rotateX(rotationAngle);
+            this.crystal3Dlines.rotateX(rotationAngle);
         }, this);
         this.input.keyboard!.addKey('Right').on('down', function(this: GameScene) {
-            this.theCrystal.rotate(0, +rotationAngle);
+            //this.theCrystal.rotate(0, +rotationAngle);
+            this.crystal3D.rotateY(rotationAngle);
+            this.crystal3Dlines.rotateY(rotationAngle);
         }, this);
         this.input.keyboard!.addKey('Up').on('down', function(this: GameScene) {
-            this.theCrystal.rotate(-rotationAngle, 0);
+            //this.theCrystal.rotate(-rotationAngle, 0);
         }, this);
         this.input.keyboard!.addKey('Down').on('down', function(this: GameScene) {
-            this.theCrystal.rotate(rotationAngle, 0);
+            //this.theCrystal.rotate(rotationAngle, 0);
         }, this);
+
+    }
+
+    // Create 3D crystal
+    createCrystal() {
+
+        // setup the three canvas and add it to the body
+        const threeCanvas = document.createElement('canvas');   // create a new canvas
+        threeCanvas.id = 'threeCanvas';
+        document.body.appendChild(threeCanvas);
+
+        // set the style and size
+        threeCanvas.style.position = 'absolute';        // set absolute position
+        threeCanvas.style.top = '0';                    // position it on the top
+        threeCanvas.style.left = '0';                   // position it on the left
+        threeCanvas.style.margin = '0';                 // remove any margins
+        threeCanvas.style.imageRendering = 'pixelated'; // apply the pixelated style for this canvas
+
+        this.resizeThreeCanvas('threeCanvas');  // resize it for the first time
+
+        // update the style of the three canvas to always be on top of the phaser canvas (when phaser canvas is resized)
+        this.scale.on('resize', () => {this.resizeThreeCanvas('threeCanvas')},this);
+
+        // create a new THREE scene
+        const threeScene: THREE.Scene = new THREE.Scene();
+
+        // create a renderer
+        const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
+            canvas: threeCanvas,
+            antialias: true
+        });
+        renderer.autoClear = false;
+
+        // add a camera
+        const camera = new THREE.PerspectiveCamera(45, gameOptions.gameWidth / gameOptions.gameHeight, 0.1, 5);
+        camera.position.set(0, 0, 2);
+
+        // create box geometry, material and mesh
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({color: 0x44aa88, opacity: 0.8, transparent: true});
+        this.crystal3D = new THREE.Mesh(geometry, material);
+        threeScene.add(this.crystal3D);
+
+        // add edges
+        const edges = new THREE.EdgesGeometry(geometry);
+        this.crystal3Dlines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
+        threeScene.add(this.crystal3Dlines);
+
+        // create an external game object and it's renderer
+        const view = this.add.extern();
+
+        // @ts-expect-error
+        view.render = () => {
+            renderer.state.reset();
+            renderer.render(threeScene, camera);
+        }
+
+
+    }
+
+    // Resize three canvas
+    resizeThreeCanvas(threeCanvasId:string) {
+
+        // get the canvas
+        const threeCanvas = document.getElementById(threeCanvasId) as HTMLCanvasElement;
+        const phaserCanvas = this.sys.canvas;
+
+        // resize the canvas to match the phaser canvas (be on top of it)
+        threeCanvas.style.width = phaserCanvas.style.width;                  // adapt width
+        threeCanvas.style.height = phaserCanvas.style.height;                // adapt height
+        threeCanvas.style.marginLeft = phaserCanvas.style.marginLeft;        // adapt margin
 
     }
 

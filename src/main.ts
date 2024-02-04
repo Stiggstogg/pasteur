@@ -11,7 +11,7 @@ import gameOptions from "./helper/gameOptions";
 
 // Phaser 3 config
 const config: Phaser.Types.Core.GameConfig = {
-    type: Phaser.AUTO,
+    type: Phaser.WEBGL,
     width: gameOptions.gameWidth,
     height: gameOptions.gameHeight,
     scene: [BootScene, LoadingScene, HomeScene, GameScene],
@@ -21,7 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     pixelArt: true,                                     // if true pixel perfect rendering is used
-    backgroundColor: '#000000'
+    backgroundColor: '#000000',
 };
 
 new Phaser.Game(config);
