@@ -3,6 +3,7 @@ import * as THREE from 'three';
 
 import gameOptions from "../helper/gameOptions";
 import Crystal from "../sprites/Crystal";
+import {CrystalData} from "../helper/types";
 
 // "Game" scene: Scene for the main game
 export default class GameScene extends Phaser.Scene {
@@ -81,24 +82,35 @@ export default class GameScene extends Phaser.Scene {
     // Add keyboard input to the scene.
     addKeys(): void {
 
-        const rotationAngle = Math.PI*0.05;
+        const rotationAngle = Math.PI/8;
+
+        const yAxis = new THREE.Vector3(0, 1, 0);
+        const xAxis = new THREE.Vector3(1, 0, 0);
 
         // up and down keys (moving the selection of the entries)
         this.input.keyboard!.addKey('Left').on('down', function(this: GameScene) {
-            //this.theCrystal.rotate(0, -rotationAngle);
-            this.crystal3D.rotateX(rotationAngle);
-            this.crystal3Dlines.rotateX(rotationAngle);
+
+            this.crystal3D.rotateOnWorldAxis(yAxis, -rotationAngle);            // rotate around the world axis (if the object is directly rotated, the axis of the object will also be rotated)
+            this.crystal3Dlines.rotateOnWorldAxis(yAxis, -rotationAngle);
+
         }, this);
         this.input.keyboard!.addKey('Right').on('down', function(this: GameScene) {
-            //this.theCrystal.rotate(0, +rotationAngle);
-            this.crystal3D.rotateY(rotationAngle);
-            this.crystal3Dlines.rotateY(rotationAngle);
+
+            this.crystal3D.rotateOnWorldAxis(yAxis, rotationAngle);
+            this.crystal3Dlines.rotateOnWorldAxis(yAxis, rotationAngle);
+
         }, this);
         this.input.keyboard!.addKey('Up').on('down', function(this: GameScene) {
-            //this.theCrystal.rotate(-rotationAngle, 0);
+
+            this.crystal3D.rotateOnWorldAxis(xAxis, -rotationAngle);
+            this.crystal3Dlines.rotateOnWorldAxis(xAxis, -rotationAngle);
+
         }, this);
         this.input.keyboard!.addKey('Down').on('down', function(this: GameScene) {
-            //this.theCrystal.rotate(rotationAngle, 0);
+
+            this.crystal3D.rotateOnWorldAxis(xAxis, rotationAngle);
+            this.crystal3Dlines.rotateOnWorldAxis(xAxis, rotationAngle);
+
         }, this);
 
     }
@@ -131,15 +143,52 @@ export default class GameScene extends Phaser.Scene {
             canvas: threeCanvas,
             antialias: true
         });
-        renderer.autoClear = false;
+        renderer.autoClear = false;             // if this is true, the three.js renderer will clear everything (all things rendered by Phaser) before it renders the three.js objects
 
         // add a camera
-        const camera = new THREE.PerspectiveCamera(45, gameOptions.gameWidth / gameOptions.gameHeight, 0.1, 5);
-        camera.position.set(0, 0, 2);
+        const camera = new THREE.PerspectiveCamera(45, gameOptions.gameWidth / gameOptions.gameHeight, 0.1, 10);
+        camera.position.set(0, 0, 5);
 
-        // create box geometry, material and mesh
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshBasicMaterial({color: 0x44aa88, opacity: 0.8, transparent: true});
+        const points = this.triangulate();
+
+        const verticesOfCube = new Float32Array([
+            -1.0, -1.0,  1.0,
+            1.0, -1.0,  1.0,
+            1.0,  1.0,  1.0,
+            -1.0,  1.0,  1.0,
+            -1.0, -1.0,  -1.0,
+            1.0, -1.0,  -1.0,
+            1.0,  1.0,  -1.0,
+            -1.0,  1.0,  -1.0,
+        ]);
+
+        const indicesOfFaces = [
+            0, 1, 2,        // front side
+            0, 2, 3,
+            4, 6, 5,        // back side
+            4, 7, 6,
+            0, 3, 7,        // left side
+            0, 7, 4,
+            1, 6, 2,        // right side
+            1, 5, 6,
+            3, 2, 6,        // top side
+            3, 6, 7,
+            0, 4, 5,        // bottom side
+            0, 5, 1
+
+        ];
+
+        const geometry = new THREE.BufferGeometry();
+
+        geometry.setIndex(indicesOfFaces);
+        geometry.setAttribute('position', new THREE.BufferAttribute(verticesOfCube, 3));
+
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x44aa88,
+            opacity: 0.8,
+            transparent: true,
+            side: THREE.FrontSide
+        });
         this.crystal3D = new THREE.Mesh(geometry, material);
         threeScene.add(this.crystal3D);
 
@@ -148,15 +197,14 @@ export default class GameScene extends Phaser.Scene {
         this.crystal3Dlines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
         threeScene.add(this.crystal3Dlines);
 
-        // create an external game object and it's renderer
+        //create an external game object, add it to the Phaser scene and ensure it is rendered together with the other objects in the game loop
         const view = this.add.extern();
 
         // @ts-expect-error
         view.render = () => {
-            renderer.state.reset();
-            renderer.render(threeScene, camera);
+             renderer.state.reset();
+             renderer.render(threeScene, camera);
         }
-
 
     }
 
@@ -171,6 +219,35 @@ export default class GameScene extends Phaser.Scene {
         threeCanvas.style.width = phaserCanvas.style.width;                  // adapt width
         threeCanvas.style.height = phaserCanvas.style.height;                // adapt height
         threeCanvas.style.marginLeft = phaserCanvas.style.marginLeft;        // adapt margin
+
+    }
+
+    // Triangulate crystal faces by fan triangulation (pre-condition: All faces are convex polygons!)
+    triangulate() {
+
+        const crystal: CrystalData = this.cache.json.get('simpleShape');
+
+        const vertices: number[] = crystal.vertices.flat();
+        const faceIndices: number[] = [];
+
+        for (let f = 0; f < crystal.faceIndices.length; f++) {          // go through each face (index: f)
+
+            for (let t = 0; t < crystal.faceIndices[f].length - 2; t++) {   // create triangles using fan triangulation (number of traingles = number of vertices - 2)
+
+                faceIndices.push(
+                    crystal.faceIndices[f][0],          // start point of the triangle is always the first vertex
+                    crystal.faceIndices[f][t+1],
+                    crystal.faceIndices[f][t+2]
+                );
+
+            }
+
+        }
+
+        return {
+            vertices: vertices,
+            faceIndices: faceIndices
+        }
 
     }
 
