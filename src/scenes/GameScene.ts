@@ -3,7 +3,6 @@ import * as THREE from 'three';
 
 import gameOptions from "../helper/gameOptions";
 import Crystal from "../sprites/Crystal";
-import {CrystalData} from "../helper/types";
 
 // "Game" scene: Scene for the main game
 export default class GameScene extends Phaser.Scene {
@@ -11,9 +10,7 @@ export default class GameScene extends Phaser.Scene {
     private head!: Phaser.GameObjects.Image;
     private bowlLeft!: Phaser.GameObjects.Image;
     private bowlRight!: Phaser.GameObjects.Image;
-    private theCrystal!: Crystal;  // TODO: Remove later, just for testing
-    private crystal3D!: THREE.Mesh;
-    private crystal3Dlines!: THREE.LineSegments;
+    private crystal!: Crystal;
 
     // Constructor
     constructor() {
@@ -55,17 +52,16 @@ export default class GameScene extends Phaser.Scene {
             this.head.setFrame(1);
         }, this);
 
-        // Crystal test
-        //this.theCrystal = this.add.existing(new Crystal(this));
+        // setup the THREE canvas and scene
+        const threeScene = this.setupThree();
 
-        // Create 3D crystal
-        this.createCrystal();
+        // setup the crystal
+        this.crystal = new Crystal(threeScene, this);
 
         // Add keyboard inputs
         this.addKeys();
 
-        this.scale.on('resize', () => {
-
+        this.scale.on('resize', () => { //TODO: Add resize of THREE canvas?
 
 
         },this);
@@ -75,7 +71,6 @@ export default class GameScene extends Phaser.Scene {
     // Update function for the game loop.
     update(_time: number, _delta: number): void {       // remove underscore if time and delta is needed
 
-        //this.theCrystal.update();
 
     }
 
@@ -84,39 +79,32 @@ export default class GameScene extends Phaser.Scene {
 
         const rotationAngle = Math.PI/8;
 
-        const yAxis = new THREE.Vector3(0, 1, 0);
-        const xAxis = new THREE.Vector3(1, 0, 0);
-
         // up and down keys (moving the selection of the entries)
         this.input.keyboard!.addKey('Left').on('down', function(this: GameScene) {
 
-            this.crystal3D.rotateOnWorldAxis(yAxis, -rotationAngle);            // rotate around the world axis (if the object is directly rotated, the axis of the object will also be rotated)
-            this.crystal3Dlines.rotateOnWorldAxis(yAxis, -rotationAngle);
+            this.crystal.rotate(0, -rotationAngle);
 
         }, this);
         this.input.keyboard!.addKey('Right').on('down', function(this: GameScene) {
 
-            this.crystal3D.rotateOnWorldAxis(yAxis, rotationAngle);
-            this.crystal3Dlines.rotateOnWorldAxis(yAxis, rotationAngle);
+            this.crystal.rotate(0, rotationAngle);
 
         }, this);
         this.input.keyboard!.addKey('Up').on('down', function(this: GameScene) {
 
-            this.crystal3D.rotateOnWorldAxis(xAxis, -rotationAngle);
-            this.crystal3Dlines.rotateOnWorldAxis(xAxis, -rotationAngle);
+            this.crystal.rotate(-rotationAngle, 0);
 
         }, this);
         this.input.keyboard!.addKey('Down').on('down', function(this: GameScene) {
 
-            this.crystal3D.rotateOnWorldAxis(xAxis, rotationAngle);
-            this.crystal3Dlines.rotateOnWorldAxis(xAxis, rotationAngle);
+            this.crystal.rotate(rotationAngle, 0);
 
         }, this);
 
     }
 
-    // Create 3D crystal
-    createCrystal() {
+    // Create the three canvas and scene
+    setupThree(): THREE.Scene {
 
         // setup the three canvas and add it to the body
         const threeCanvas = document.createElement('canvas');   // create a new canvas
@@ -130,10 +118,11 @@ export default class GameScene extends Phaser.Scene {
         threeCanvas.style.margin = '0';                 // remove any margins
         threeCanvas.style.imageRendering = 'pixelated'; // apply the pixelated style for this canvas
 
-        this.resizeThreeCanvas('threeCanvas');  // resize it for the first time
-
-        // update the style of the three canvas to always be on top of the phaser canvas (when phaser canvas is resized)
-        this.scale.on('resize', () => {this.resizeThreeCanvas('threeCanvas')},this);
+        // resize the three canvas to match the game canvas
+        this.resizeThreeCanvas('threeCanvas');     // resize it for the first time
+        this.scale.on('resize', () => {         // update the style of the three canvas to always be on top of the phaser canvas (when phaser canvas is resized)
+            this.resizeThreeCanvas('threeCanvas')
+        },this);
 
         // create a new THREE scene
         const threeScene: THREE.Scene = new THREE.Scene();
@@ -149,66 +138,20 @@ export default class GameScene extends Phaser.Scene {
         const camera = new THREE.PerspectiveCamera(45, gameOptions.gameWidth / gameOptions.gameHeight, 0.1, 10);
         camera.position.set(0, 0, 5);
 
-        const points = this.triangulate();
-
-        const verticesOfCube = new Float32Array([
-            -1.0, -1.0,  1.0,
-            1.0, -1.0,  1.0,
-            1.0,  1.0,  1.0,
-            -1.0,  1.0,  1.0,
-            -1.0, -1.0,  -1.0,
-            1.0, -1.0,  -1.0,
-            1.0,  1.0,  -1.0,
-            -1.0,  1.0,  -1.0,
-        ]);
-
-        const indicesOfFaces = [
-            0, 1, 2,        // front side
-            0, 2, 3,
-            4, 6, 5,        // back side
-            4, 7, 6,
-            0, 3, 7,        // left side
-            0, 7, 4,
-            1, 6, 2,        // right side
-            1, 5, 6,
-            3, 2, 6,        // top side
-            3, 6, 7,
-            0, 4, 5,        // bottom side
-            0, 5, 1
-
-        ];
-
-        const geometry = new THREE.BufferGeometry();
-
-        geometry.setIndex(indicesOfFaces);
-        geometry.setAttribute('position', new THREE.BufferAttribute(verticesOfCube, 3));
-
-        const material = new THREE.MeshBasicMaterial({
-            color: 0x44aa88,
-            opacity: 0.8,
-            transparent: true,
-            side: THREE.FrontSide
-        });
-        this.crystal3D = new THREE.Mesh(geometry, material);
-        threeScene.add(this.crystal3D);
-
-        // add edges
-        const edges = new THREE.EdgesGeometry(geometry);
-        this.crystal3Dlines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
-        threeScene.add(this.crystal3Dlines);
-
         //create an external game object, add it to the Phaser scene and ensure it is rendered together with the other objects in the game loop
         const view = this.add.extern();
 
         // @ts-expect-error
         view.render = () => {
-             renderer.state.reset();
-             renderer.render(threeScene, camera);
+            renderer.state.reset();
+            renderer.render(threeScene, camera);
         }
+
+        return threeScene;
 
     }
 
-    // Resize three canvas
+    // Resize THREE canvas
     resizeThreeCanvas(threeCanvasId:string) {
 
         // get the canvas
@@ -219,35 +162,6 @@ export default class GameScene extends Phaser.Scene {
         threeCanvas.style.width = phaserCanvas.style.width;                  // adapt width
         threeCanvas.style.height = phaserCanvas.style.height;                // adapt height
         threeCanvas.style.marginLeft = phaserCanvas.style.marginLeft;        // adapt margin
-
-    }
-
-    // Triangulate crystal faces by fan triangulation (pre-condition: All faces are convex polygons!)
-    triangulate() {
-
-        const crystal: CrystalData = this.cache.json.get('simpleShape');
-
-        const vertices: number[] = crystal.vertices.flat();
-        const faceIndices: number[] = [];
-
-        for (let f = 0; f < crystal.faceIndices.length; f++) {          // go through each face (index: f)
-
-            for (let t = 0; t < crystal.faceIndices[f].length - 2; t++) {   // create triangles using fan triangulation (number of traingles = number of vertices - 2)
-
-                faceIndices.push(
-                    crystal.faceIndices[f][0],          // start point of the triangle is always the first vertex
-                    crystal.faceIndices[f][t+1],
-                    crystal.faceIndices[f][t+2]
-                );
-
-            }
-
-        }
-
-        return {
-            vertices: vertices,
-            faceIndices: faceIndices
-        }
 
     }
 

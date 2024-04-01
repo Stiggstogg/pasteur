@@ -22,6 +22,11 @@ export interface CoordinateMinMax {
 }
 
 export interface CrystalData {
-    vertices: number[][],
+    vertices: number[],
     faceIndices: number[][]
+}
+
+export interface CrystalDataTriangulated {
+    vertices: number[],
+    faceIndices: number[]
 }

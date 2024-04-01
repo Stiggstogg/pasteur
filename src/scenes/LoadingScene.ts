@@ -14,6 +14,7 @@ import bowlRightImg from '../assets/images/bowl-right.gif';
 // json
 import nodesAndFacesJson from '../assets/json/nodesAndFaces.json';
 import simpleShapeJson from '../assets/json/simpleShape.json';
+import crystalDataJson from '../assets/json/crystalData.json';
 
 // "Loading" scene: Loads all assets and shows a progress bar while loading
 export default class LoadingScene extends Phaser.Scene {
@@ -86,6 +87,7 @@ export default class LoadingScene extends Phaser.Scene {
         // load json
         this.load.json('nodesAndFaces', nodesAndFacesJson);
         this.load.json('simpleShape', simpleShapeJson);
+        this.load.json('crystalData', crystalDataJson);
 
         // load fonts (with "webfontloader")
         this.load.addFile(new WebFontFile(this.load, 'Orbitron'));
