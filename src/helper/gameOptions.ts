@@ -55,12 +55,12 @@ class GameOptions {
         // ------------------------
 
         this.lineWidth = 1;                 // line width of the edges
-        this.lineColor = 0x666666;          // color of the faces and lines
+        this.lineColor = 0x000000;          // color of the faces and lines
         this.lineAlpha = 0.5;               // alpha value of the line
         this.faceColor = 0xFFFFFF;          // color of the face
         this.faceAlpha = 0.5;               // alpha of the face
-        this.tableCrystalSize = 47;         // size of the table crystal // TODO: Change back to 10 after testing
-        this.microscopeCrystalSize = 47;    // size of the microscope crystal
+        this.tableCrystalSize = 10;         // size of the table crystal
+        this.microscopeCrystalSize = 30;    // size of the microscope crystal
     }
 
 }

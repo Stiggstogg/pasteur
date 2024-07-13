@@ -7,8 +7,6 @@ export default class Crystal {
 
     private mesh: THREE.Mesh;                           // mesh (includes the geometry and material)
     private edgeLines: THREE.LineSegments;              // lines on the edges of the crystal
-    private threeScene: THREE.Scene;                    // THREE scene on which the crystal is places
-    private phaserScene: Phaser.Scene;                  // Phaser scene which is used
     private weight: number;                             // weight of the crystal (and basically also size)
     private enantiomer: CrystalEnantiomer               // crystal enantiomer (R or S)
     private location: CrystalLocation;                  // where is the crystal currently (table, microscope or in a bowl)
@@ -38,7 +36,7 @@ export default class Crystal {
 
         // create the edge lines
         this.edgeLines = new THREE.LineSegments(
-            new THREE.EdgesGeometry(geometry),
+            new THREE.EdgesGeometry(geometry, 1),
             new THREE.LineBasicMaterial({color: gameOptions.lineColor}));
 
         // add the 3D crystal mesh and the edge lines to the THREE scene
@@ -115,8 +113,15 @@ export default class Crystal {
 
         }
 
+        // Scale crystal // TODO: Make it better!
+        const crystalScaled: number[] = [];
+
+        for (let i = 0; i < crystalData.vertices.length; i++) {
+            crystalScaled.push(crystalData.vertices[i] * 5);
+        }
+
         return {
-            vertices: crystalData.vertices,
+            vertices: crystalScaled,
             faceIndices: faceIndicesTriangulated
         }
 

@@ -135,8 +135,8 @@ export default class GameScene extends Phaser.Scene {
         renderer.autoClear = false;             // if this is true, the three.js renderer will clear everything (all things rendered by Phaser) before it renders the three.js objects
 
         // add a camera
-        const camera = new THREE.PerspectiveCamera(45, gameOptions.gameWidth / gameOptions.gameHeight, 0.1, 10);
-        camera.position.set(0, 0, 5);
+        const camera = new THREE.PerspectiveCamera(45, gameOptions.gameWidth / gameOptions.gameHeight, 0.1, 100);
+        camera.position.set(0, 0, 10);
 
         //create an external game object, add it to the Phaser scene and ensure it is rendered together with the other objects in the game loop
         const view = this.add.extern();
