@@ -83,7 +83,7 @@ class GameOptions {
             y: 0.15
         };
         this.crystalTableDistance =  0.13;   // distance between the crystals on the table (relative distance to game width)
-        this.dragSensitivity = 0.01;         // relative sensitivity (to game width) which is used to determine the dragging speed (this value corresponds to one degree of rotation)
+        this.dragSensitivity = 0.50;         // relative sensitivity (to game width) which is used to determine the dragging speed (this value corresponds to one degree of rotation)
 
     }
 

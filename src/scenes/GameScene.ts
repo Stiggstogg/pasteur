@@ -12,7 +12,6 @@ export default class GameScene extends Phaser.Scene {
     private bowlLeft!: Phaser.GameObjects.Image;
     private bowlRight!: Phaser.GameObjects.Image;
     private allCrystals!: Crystal[];
-    private dragZone!: Phaser.GameObjects.Zone;
     private dragging!: boolean;
     private dragStart!: {x: number, y: number};
     private microscope!: Phaser.GameObjects.Image;
@@ -29,7 +28,7 @@ export default class GameScene extends Phaser.Scene {
     // Creates all objects of this scene
     create(): void {
 
-        // initialize paramters
+        // initialize parameters
         this.dragging = false;
         this.dragStart = {x: 0, y: 0};
 
@@ -42,9 +41,6 @@ export default class GameScene extends Phaser.Scene {
         // create the crystals
         this.createCrystals();
 
-        // Add keyboard inputs
-        this.addKeys();
-
         // Add click event listeners
         this.addClickEventListeners();
 
@@ -52,36 +48,6 @@ export default class GameScene extends Phaser.Scene {
 
     // Update function for the game loop.
     update(_time: number, _delta: number): void {       // remove underscore if time and delta is needed
-
-
-    }
-
-    // Add keyboard input to the scene.
-    addKeys(): void {
-
-        //const rotationAngle = Math.PI/8;
-
-        // up and down keys (moving the selection of the entries)
-        this.input.keyboard!.addKey('Left').on('down', function(this: GameScene) {
-
-            //this.crystal.rotate(0, -rotationAngle);
-
-        }, this);
-        this.input.keyboard!.addKey('Right').on('down', function(this: GameScene) {
-
-            //this.crystal.rotate(0, rotationAngle);
-
-        }, this);
-        this.input.keyboard!.addKey('Up').on('down', function(this: GameScene) {
-
-            //this.crystal.rotate(-rotationAngle, 0);
-
-        }, this);
-        this.input.keyboard!.addKey('Down').on('down', function(this: GameScene) {
-
-            //this.crystal.rotate(rotationAngle, 0);
-
-        }, this);
 
     }
 
@@ -95,8 +61,6 @@ export default class GameScene extends Phaser.Scene {
 
         this.bowlLeft = this.add.sprite(gameOptions.gameWidth * 0.17, gameOptions.gameHeight * 0.53, 'bowlLeft').setInteractive();
         this.bowlRight = this.add.sprite(gameOptions.gameWidth * 0.85, gameOptions.gameHeight * 0.53, 'bowlRight').setInteractive();
-
-        //this.dragZone = this.add.zone(0, 0, gameOptions.gameWidth, gameOptions.gameHeight).setOrigin(0).setInteractive();
 
         const microscopeSpace = 0.03;
         this.microscope = this.add.sprite(gameOptions.gameWidth * (1 - microscopeSpace), gameOptions.gameWidth * microscopeSpace, 'microscope').setOrigin(1, 0).setInteractive();
@@ -227,10 +191,6 @@ export default class GameScene extends Phaser.Scene {
 
         });
 
-        this.input.on('pointerdown', () => {
-            console.log('click');
-        });
-
         // Dragging of the crystal
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
 
@@ -238,27 +198,22 @@ export default class GameScene extends Phaser.Scene {
                 this.dragging = true;
                 this.dragStart.x = pointer.x;       // save the start position of the drag
                 this.dragStart.y = pointer.y;
-                console.log('dragging started');
             }
 
         });
 
         this.input.on('pointerup', () => {
                 this.dragging = false;              // stop dragging when the pointer is released
-                console.log('dragging stopped');
         });
 
         this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
 
             if (this.dragging && !pointer.noButtonDown()) {                          // not sure if !pointer.noButtonDown() is necessary (comes from this example: https://labs.phaser.io/view.html?src=src/input/pointer/pointer%20buttons.js)
 
-
-                console.log('dragging');
-
                 // get the crystal in the microscope
                 const crystal = this.getOpenCrystal();
 
-                // rotate the crystal
+                // rotate the crystal           // TODO: Dragging feels strange... Not sure if function is correct...
                 if (crystal) {
                     crystal.rotate((pointer.y - this.dragStart.y) / gameOptions.gameWidth * gameOptions.dragSensitivity, (pointer.x - this.dragStart.x) / gameOptions.gameWidth * gameOptions.dragSensitivity);
                 }
