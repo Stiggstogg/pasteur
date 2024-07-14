@@ -1,22 +1,37 @@
 import gameOptions from '../helper/gameOptions';
-import {CrystalData, CrystalDataTriangulated, CrystalEnantiomer, CrystalLocation} from "../helper/types";
+import {Clicks, CrystalData, CrystalDataTriangulated, CrystalEnantiomer, CrystalLocation} from "../helper/types";
 import * as THREE from 'three';
 
 // Crystal class
 export default class Crystal {
 
+    private x: number;                                  // relative x position of the crystal on the screen
+    private y: number;                                  // relative y position of the crystal on the screen
+    private x3d: number;                                // x position in the 3D world
+    private y3d: number;                                // y position in the 3D world
+    private rotX: number;                               // rotation of the crystal around the x axis in radians
+    private rotY: number;                               // rotation of the crystal around the y axis in radians
     private mesh: THREE.Mesh;                           // mesh (includes the geometry and material)
     private edgeLines: THREE.LineSegments;              // lines on the edges of the crystal
     private weight: number;                             // weight of the crystal (and basically also size)
     private enantiomer: CrystalEnantiomer               // crystal enantiomer (R or S)
-    private location: CrystalLocation;                  // where is the crystal currently (table, microscope or in a bowl)
+    public location: CrystalLocation;                  // where is the crystal currently (table, microscope or in a bowl)
     private xAxis: THREE.Vector3;                       // x-axis to rotate the crystal around
     private yAxis: THREE.Vector3;                       // y-axis to rotate the crystal around
-    private rotX: number;                               // rotation of the crystal around the x axis in radians
-    private rotY: number;                               // rotation of the crystal around the y axis in radians
+    private threeScene: THREE.Scene;                    // the three scene
+    private camera: THREE.PerspectiveCamera;            // the camera of the scene
+    private clickZone: Phaser.GameObjects.Zone;         // click zone for the crystal
 
     // Constructor
-    constructor(threeScene: THREE.Scene, phaserScene: Phaser.Scene) {
+    constructor(threeScene: THREE.Scene, phaserScene: Phaser.Scene, camera: THREE.PerspectiveCamera, x: number, y: number) {
+
+        // initialize parameters
+        this.x = x;
+        this.y = y;
+        this.x3d = 0;
+        this.y3d = 0;
+        this.threeScene = threeScene;
+        this.camera = camera;
 
         // setup the material for the crystal
         const material = new THREE.MeshBasicMaterial({
@@ -40,8 +55,8 @@ export default class Crystal {
             new THREE.LineBasicMaterial({color: gameOptions.lineColor}));
 
         // add the 3D crystal mesh and the edge lines to the THREE scene
-        threeScene.add(this.mesh);
-        threeScene.add(this.edgeLines);
+        this.threeScene.add(this.mesh);
+        this.threeScene.add(this.edgeLines);
 
         // setup x- and y-axis for the rotation
         this.xAxis = new THREE.Vector3(1, 0, 0);
@@ -57,6 +72,12 @@ export default class Crystal {
 
         // place the crystal on the table
         this.location = CrystalLocation.TABLE;
+
+        this.position();
+        this.putOnTable();
+
+        // add click zone
+        this.createClickZone(phaserScene);
 
     }
 
@@ -124,6 +145,64 @@ export default class Crystal {
             vertices: crystalScaled,
             faceIndices: faceIndicesTriangulated
         }
+
+    }
+
+    // position the crystal in the three scene (on the table) based on screen coordinates
+    private position() {
+
+
+        this.camera.updateMatrixWorld();
+        this.camera.updateProjectionMatrix();
+
+        // Convert screen position to NDC (noramlized device coordinates, in NDC, the x and y coordinates range from -1 to 1, where (-1, -1) is the bottom left and (1, 1) is the top right of the screen.)
+        const ndcX = this.x * 2 - 1;
+        const ndcY = -this.y * 2 + 1;
+
+        // Calculate the z ndc based on the z world coordinate of the crystal on the table (project the 3D position of the crystal on the table to NDC)
+        const ndcZ = new THREE.Vector3(0, 0, gameOptions.zCrystalTable).project(this.camera).z;
+
+        // Create a Vector3 in NDC
+        const vector = new THREE.Vector3(ndcX, ndcY, ndcZ);
+
+        // Unproject to convert from NDC to world space
+        vector.unproject(this.camera);
+
+        this.x3d = vector.x;
+        this.y3d = vector.y;
+
+    }
+
+    // Put the crystal in the microscope
+    public putInMicroscope() {
+        this.location = CrystalLocation.MICROSCOPE;
+
+        // position it in the center of the screen
+        this.mesh.position.set(0, 0, gameOptions.zCrystalMicroscope);
+        this.edgeLines.position.set(0, 0, gameOptions.zCrystalMicroscope);
+
+    }
+
+    // Put the crystal on the table
+    public putOnTable() {
+        this.location = CrystalLocation.TABLE;
+
+        this.mesh.position.set(this.x3d, this.y3d, gameOptions.zCrystalTable);
+        this.edgeLines.position.set(this.x3d, this.y3d, gameOptions.zCrystalTable);
+
+    }
+
+    // create the click zone for the crystal
+    private createClickZone(phaserScene: Phaser.Scene) {
+
+        this.clickZone = phaserScene.add.zone(this.x * gameOptions.gameWidth, this.y * gameOptions.gameHeight,
+            gameOptions.crystalClickAreaSize * gameOptions.gameWidth, gameOptions.crystalClickAreaSize * gameOptions.gameWidth)
+            .setOrigin(0.5).setInteractive();
+
+        // emit the click event (on the scene) when the click zone is clicked
+        this.clickZone.on('pointerdown', () => {
+            this.clickZone.scene.events.emit(Clicks.CRYSTAL, this);
+        });
 
     }
 

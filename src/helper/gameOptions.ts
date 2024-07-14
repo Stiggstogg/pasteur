@@ -15,8 +15,13 @@ class GameOptions {
     public readonly lineAlpha: number;
     public readonly faceColor: number;
     public readonly faceAlpha: number;
-    public readonly tableCrystalSize: number;
-    public readonly microscopeCrystalSize: number;
+    public readonly zCrystalTable: number;
+    public readonly zCrystalMicroscope: number;
+    public readonly crystalClickAreaSize: number;
+    public readonly numberOfCrystals: number;
+    public readonly crystalTableStart: {x: number, y: number};
+    public readonly crystalTableDistance: number;
+    public readonly dragSensitivity: number;
 
     constructor() {
 
@@ -59,8 +64,27 @@ class GameOptions {
         this.lineAlpha = 0.5;               // alpha value of the line
         this.faceColor = 0xFFFFFF;          // color of the face
         this.faceAlpha = 0.5;               // alpha of the face
-        this.tableCrystalSize = 10;         // size of the table crystal
-        this.microscopeCrystalSize = 30;    // size of the microscope crystal
+
+        // ------------------------
+        // Crystal position in 3D
+        // ------------------------
+
+        this.zCrystalTable = -50;
+        this.zCrystalMicroscope = 0;
+
+        // ------------------------
+        // Other crystal options
+        // ------------------------
+
+        this.crystalClickAreaSize = 0.1;    // relative (to game width) size of the clickable area around the crystal
+        this.numberOfCrystals = 10;         // number of crystals on the table
+        this.crystalTableStart = {          // start position of the crystals on the table (relative postion)
+            x: 0.3,
+            y: 0.15
+        };
+        this.crystalTableDistance =  0.13;   // distance between the crystals on the table (relative distance to game width)
+        this.dragSensitivity = 0.01;         // relative sensitivity (to game width) which is used to determine the dragging speed (this value corresponds to one degree of rotation)
+
     }
 
 }

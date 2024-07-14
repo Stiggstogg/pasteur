@@ -15,6 +15,7 @@ const config: Phaser.Types.Core.GameConfig = {
     width: gameOptions.gameWidth,
     height: gameOptions.gameHeight,
     scene: [BootScene, LoadingScene, HomeScene, GameScene],
+    canvas: document.getElementById('phaserCanvas') as HTMLCanvasElement,                             // id of the canvas element
     title: 'Pasteur the Game',                  // Shown in the console
     scale: {
         mode: Phaser.Scale.FIT,

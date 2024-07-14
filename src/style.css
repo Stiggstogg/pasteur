@@ -1,4 +1,33 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
 body {
-  margin: 0;
   background-color: black;
+}
+
+/* Style for the parent container which contains both canvases (to have them on top of each other)*/
+#canvasContainer {
+  position: relative;
+  width: 100%; /* Set to desired width */
+  height: auto; /* Set to desired height */
+}
+
+/* Common style for both canvases */
+#canvasContainer canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Optional: Control which canvas is on top */
+#threeCanvas {
+  z-index: 2;
+}
+
+#phaserCanvas {
+  z-index: 1;
 }

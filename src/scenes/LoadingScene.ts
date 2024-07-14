@@ -8,11 +8,11 @@ import tableImg from '../assets/images/table.png';
 import headsImg from '../assets/images/heads.png';
 import bowlLeftImg from '../assets/images/bowl-left.gif';
 import bowlRightImg from '../assets/images/bowl-right.gif';
+import microscopeImg from '../assets/images/microscope.png';
 
 // audio
 
 // json
-import nodesAndFacesJson from '../assets/json/nodesAndFaces.json';
 import simpleShapeJson from '../assets/json/simpleShape.json';
 import crystalDataJson from '../assets/json/crystalData.json';
 
@@ -76,7 +76,7 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.image('table', tableImg);
         this.load.image('bowlLeft', bowlLeftImg);
         this.load.image('bowlRight', bowlRightImg);
-
+        this.load.image('microscope', microscopeImg);
 
         // spritesheets
         this.load.spritesheet('head', headsImg, {frameWidth: 58, frameHeight: 83});
@@ -85,7 +85,6 @@ export default class LoadingScene extends Phaser.Scene {
         //this.load.audio('miss', 'assets/audio/Pew.mp3');
 
         // load json
-        this.load.json('nodesAndFaces', nodesAndFacesJson);
         this.load.json('simpleShape', simpleShapeJson);
         this.load.json('crystalData', crystalDataJson);
 

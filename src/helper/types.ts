@@ -4,6 +4,13 @@ export enum CrystalLocation {
     BOWL
 }
 
+export enum Clicks {
+    CRYSTAL = 'CrystalClick',
+    BOWLLEFT = 'BowlLeftClick',
+    BOWLRIGHT = 'BowlRightClick',
+    MICROSCOPE = 'MicroscopeClick'
+}
+
 export enum CrystalEnantiomer {
     R,
     S
