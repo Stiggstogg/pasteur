@@ -13,7 +13,7 @@ export default class GameScene extends Phaser.Scene {
     private bowlRight!: Phaser.GameObjects.Image;
     private allCrystals!: Crystal[];
     private dragging!: boolean;
-    private dragStart!: {x: number, y: number};
+    private previousPointerPos!: Phaser.Math.Vector2;       // previous pointer position (from last frame)
     private microscope!: Phaser.GameObjects.Image;
     private threeScene!: THREE.Scene;
     private threeCamera!: THREE.PerspectiveCamera;
@@ -30,7 +30,7 @@ export default class GameScene extends Phaser.Scene {
 
         // initialize parameters
         this.dragging = false;
-        this.dragStart = {x: 0, y: 0};
+        this.previousPointerPos = new Phaser.Math.Vector2();
 
         // set up the 2D world (background table, bowls etc...)
         this.setup2DWorld();
@@ -48,6 +48,27 @@ export default class GameScene extends Phaser.Scene {
 
     // Update function for the game loop.
     update(_time: number, _delta: number): void {       // remove underscore if time and delta is needed
+
+        // rotate the crystal when dragging is activated
+        if (this.dragging && !this.input.activePointer.noButtonDown()) {                          // not sure if !this.input.activePointer.noButtonDown() is necessary (comes from this example: https://labs.phaser.io/view.html?src=src/input/pointer/pointer%20buttons.js)
+
+            // get the crystal in the microscope
+            const crystal = this.getOpenCrystal();
+
+            // rotate the crystal
+            if (crystal) {
+
+                const currentPointerPos = new Phaser.Math.Vector2(this.input.activePointer.position.x, this.input.activePointer.position.y);
+
+                // rotate the crystal based on the difference between the previous pointer position and the current pointer position
+                crystal.rotate((currentPointerPos.y - this.previousPointerPos.y) / gameOptions.gameWidth * gameOptions.dragSensitivity, (currentPointerPos.x - this.previousPointerPos.x) / gameOptions.gameWidth * gameOptions.dragSensitivity);
+
+                // save the current pointer position as previous pointer position (for next frame)
+                this.previousPointerPos = currentPointerPos;
+
+            }
+
+        }
 
     }
 
@@ -195,31 +216,15 @@ export default class GameScene extends Phaser.Scene {
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
 
             if (this.getOpenCrystal()) {
-                this.dragging = true;
-                this.dragStart.x = pointer.x;       // save the start position of the drag
-                this.dragStart.y = pointer.y;
+                this.dragging = true;                               // start dragging
+                this.previousPointerPos.x = pointer.position.x;       // save the initial position of the pointer as previous pointer position
+                this.previousPointerPos.y = pointer.position.y;
             }
 
         });
 
         this.input.on('pointerup', () => {
                 this.dragging = false;              // stop dragging when the pointer is released
-        });
-
-        this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-
-            if (this.dragging && !pointer.noButtonDown()) {                          // not sure if !pointer.noButtonDown() is necessary (comes from this example: https://labs.phaser.io/view.html?src=src/input/pointer/pointer%20buttons.js)
-
-                // get the crystal in the microscope
-                const crystal = this.getOpenCrystal();
-
-                // rotate the crystal           // TODO: Dragging feels strange... Not sure if function is correct...
-                if (crystal) {
-                    crystal.rotate((pointer.y - this.dragStart.y) / gameOptions.gameWidth * gameOptions.dragSensitivity, (pointer.x - this.dragStart.x) / gameOptions.gameWidth * gameOptions.dragSensitivity);
-                }
-
-            }
-
         });
 
     }

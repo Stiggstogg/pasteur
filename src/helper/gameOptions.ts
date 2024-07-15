@@ -77,13 +77,13 @@ class GameOptions {
         // ------------------------
 
         this.crystalClickAreaSize = 0.1;    // relative (to game width) size of the clickable area around the crystal
-        this.numberOfCrystals = 10;         // number of crystals on the table
+        this.numberOfCrystals = 12;         // number of crystals on the table
         this.crystalTableStart = {          // start position of the crystals on the table (relative postion)
             x: 0.3,
             y: 0.15
         };
         this.crystalTableDistance =  0.13;   // distance between the crystals on the table (relative distance to game width)
-        this.dragSensitivity = 0.50;         // relative sensitivity (to game width) which is used to determine the dragging speed (this value corresponds to one degree of rotation)
+        this.dragSensitivity = Math.PI;      // sensitivity which is used to determine the dragging speed, unit rad / game.width (how many radians should the crytal rotate if the mouse is moved from left edge of the canvas to the right edge)
 
     }
 

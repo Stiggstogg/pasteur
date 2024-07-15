@@ -138,7 +138,7 @@ export default class Crystal {
         const crystalScaled: number[] = [];
 
         for (let i = 0; i < crystalData.vertices.length; i++) {
-            crystalScaled.push(crystalData.vertices[i] * 5);
+            crystalScaled.push(crystalData.vertices[i] * 3.5);
         }
 
         return {
@@ -178,8 +178,8 @@ export default class Crystal {
         this.location = CrystalLocation.MICROSCOPE;
 
         // position it in the center of the screen
-        this.mesh.position.set(0, 0, gameOptions.zCrystalMicroscope);
-        this.edgeLines.position.set(0, 0, gameOptions.zCrystalMicroscope);
+        this.mesh.position.set(0, 1.3, gameOptions.zCrystalMicroscope);
+        this.edgeLines.position.set(0, 1.3, gameOptions.zCrystalMicroscope);
 
     }
 
