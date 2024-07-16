@@ -1,7 +1,8 @@
 export enum CrystalLocation {
     TABLE,
     MICROSCOPE,
-    BOWL
+    BOWLLEFT,
+    BOWLRIGHT
 }
 
 export enum Clicks {
@@ -19,13 +20,6 @@ export enum CrystalEnantiomer {
 export interface MinMax {
     min: number,
     max: number
-}
-
-export interface CoordinateMinMax {
-    minX: number,
-    maxX: number,
-    minY: number,
-    maxY: number
 }
 
 export interface CrystalData {

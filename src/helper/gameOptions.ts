@@ -1,7 +1,7 @@
 // CONFIGURABLE GAME OPTIONS
 // changing these values will affect gameplay
 
-import {CoordinateMinMax, MinMax} from "./types";
+import {MinMax} from "./types";
 
 class GameOptions {
 
@@ -9,7 +9,6 @@ class GameOptions {
     public readonly gameHeight: number;
     public readonly textStyles: Phaser.Types.GameObjects.Text.TextStyle[];
     public readonly weightRange: MinMax;
-    public readonly tableRange: CoordinateMinMax;
     public readonly lineWidth: number;
     public readonly lineColor: number;
     public readonly lineAlpha: number;
@@ -17,11 +16,16 @@ class GameOptions {
     public readonly faceAlpha: number;
     public readonly zCrystalTable: number;
     public readonly zCrystalMicroscope: number;
+    public readonly zCrystalBowl: number;
     public readonly crystalClickAreaSize: number;
     public readonly numberOfCrystals: number;
     public readonly crystalTableStart: {x: number, y: number};
     public readonly crystalTableDistance: number;
     public readonly dragSensitivity: number;
+    public readonly crystalScaling: number;
+    public readonly bowlLeftPosition: {x: number, y: number};
+    public readonly bowlRightPosition: {x: number, y: number};
+    public readonly bowlCrystalSpread: number;
 
     constructor() {
 
@@ -48,12 +52,12 @@ class GameOptions {
         });
 
         // ------------------------
-        // Crystal boundaries
+        // Bowls
         // ------------------------
 
-        this.weightRange = {min: 0.75, max: 1.25};                              // range for the weight
-        this.tableRange = {minX: 0.28, maxX: 0.72, minY: 0.06, maxY: 0.58};    // range where crystals are placed on the table
-        this.tableRange = {minX: 0.5, maxX: 0.5, minY: 0.35, maxY: 0.35};         // TODO: Remove, this is just for testing
+        this.bowlLeftPosition = {x: 0.17, y: 0.53};                       // position of the left bowl (relative to the game width and height)
+        this.bowlRightPosition = {x: 0.85, y: this.bowlLeftPosition.y};     // position of the right bowl (relative to the game width and height)
+        this.bowlCrystalSpread = 0.03;                                     // spread of the crystals in the bowl (relative to the game width)
 
         // ------------------------
         // Crystal style
@@ -71,14 +75,17 @@ class GameOptions {
 
         this.zCrystalTable = -50;
         this.zCrystalMicroscope = 0;
+        this.zCrystalBowl = -80;
 
         // ------------------------
         // Other crystal options
         // ------------------------
 
-        this.crystalClickAreaSize = 0.1;    // relative (to game width) size of the clickable area around the crystal
-        this.numberOfCrystals = 12;         // number of crystals on the table
-        this.crystalTableStart = {          // start position of the crystals on the table (relative postion)
+        this.weightRange = {min: 0.75, max: 1.25};              // range for the weight (the average value should by always one, as this is also used to scale the crystal, together with the scaling!)
+        this.crystalScaling = 3;                                // defines the size of the crystal (crystal coordinates are multiplied by this value)
+        this.crystalClickAreaSize = 0.1;                        // relative (to game width) size of the clickable area around the crystal
+        this.numberOfCrystals = 12;                             // number of crystals on the table
+        this.crystalTableStart = {                              // start position of the crystals on the table (relative position)
             x: 0.3,
             y: 0.15
         };

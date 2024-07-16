@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 import gameOptions from "../helper/gameOptions";
 import Crystal from "../sprites/Crystal";
-import {Clicks, CrystalLocation} from "../helper/types";
+import {Clicks, CrystalEnantiomer, CrystalLocation} from "../helper/types";
 
 // "Game" scene: Scene for the main game
 export default class GameScene extends Phaser.Scene {
@@ -11,6 +11,8 @@ export default class GameScene extends Phaser.Scene {
     private head!: Phaser.GameObjects.Image;
     private bowlLeft!: Phaser.GameObjects.Image;
     private bowlRight!: Phaser.GameObjects.Image;
+    private eeLeft!: Phaser.GameObjects.BitmapText;
+    private eeRight!: Phaser.GameObjects.BitmapText;
     private allCrystals!: Crystal[];
     private dragging!: boolean;
     private previousPointerPos!: Phaser.Math.Vector2;       // previous pointer position (from last frame)
@@ -34,6 +36,9 @@ export default class GameScene extends Phaser.Scene {
 
         // set up the 2D world (background table, bowls etc...)
         this.setup2DWorld();
+
+        // set up texts
+        this.setupTexts();
 
         // set up the THREE canvas and scene (3D world)
         this.setupThree();
@@ -80,14 +85,30 @@ export default class GameScene extends Phaser.Scene {
         this.add.rectangle(0, gameOptions.gameHeight, gameOptions.gameWidth, 0.2 * gameOptions.gameHeight, 0x333399).setOrigin(0, 1);
         this.head = this.add.image(gameOptions.gameWidth * 0.5, gameOptions.gameHeight * 0.82, 'head', 0);
 
-        this.bowlLeft = this.add.sprite(gameOptions.gameWidth * 0.17, gameOptions.gameHeight * 0.53, 'bowlLeft').setInteractive();
-        this.bowlRight = this.add.sprite(gameOptions.gameWidth * 0.85, gameOptions.gameHeight * 0.53, 'bowlRight').setInteractive();
+        this.bowlLeft = this.add.sprite(gameOptions.gameWidth * gameOptions.bowlLeftPosition.x, gameOptions.gameHeight * gameOptions.bowlLeftPosition.y, 'bowlLeft').setInteractive();
+        this.bowlRight = this.add.sprite(gameOptions.gameWidth * gameOptions.bowlRightPosition.x, gameOptions.gameHeight * gameOptions.bowlRightPosition.y, 'bowlRight').setInteractive();
 
         const microscopeSpace = 0.03;
         this.microscope = this.add.sprite(gameOptions.gameWidth * (1 - microscopeSpace), gameOptions.gameWidth * microscopeSpace, 'microscope').setOrigin(1, 0).setInteractive();
         this.microscope.setVisible(false);          // make microscope invisible
 
     }
+
+    // set up texts
+    setupTexts() {
+
+        // %ee descriptions for bowls
+        const eeHeight = 0.86;
+        this.add.bitmapText(this.bowlLeft.x, gameOptions.gameHeight * eeHeight, 'minogram', '%ee', 20).setOrigin(0.5);
+        this.add.bitmapText(this.bowlRight.x, gameOptions.gameHeight * eeHeight, 'minogram', '%ee', 20).setOrigin(0.5);
+
+        // %ee values for bowls
+        const valueHeight = eeHeight + 0.09;
+        this.eeLeft = this.add.bitmapText(this.bowlLeft.x, gameOptions.gameHeight * valueHeight, 'minogram', '000', 20).setOrigin(0.5);
+        this.eeRight = this.add.bitmapText(this.bowlRight.x, gameOptions.gameHeight * valueHeight, 'minogram', '000', 20).setOrigin(0.5);
+
+    }
+
 
     // Create the three canvas and scene
     setupThree() {
@@ -178,13 +199,11 @@ export default class GameScene extends Phaser.Scene {
 
         // Bowl clicks
         this.bowlLeft.on('pointerdown', function(this: GameScene) {
-            console.log('Left bowl was clicked!');      // TODO: Add proper function
-            this.head.setFrame(0);
+            this.putInBowl(CrystalLocation.BOWLLEFT);
         }, this);
 
         this.bowlRight.on('pointerdown', function(this: GameScene) {
-            console.log('Right bowl was clicked!');      // TODO: Add proper function
-            this.head.setFrame(1);
+            this.putInBowl(CrystalLocation.BOWLRIGHT);
         }, this);
 
         // Microscope click
@@ -234,5 +253,66 @@ export default class GameScene extends Phaser.Scene {
         return this.allCrystals.find(crystal => crystal.location === CrystalLocation.MICROSCOPE);    // get the first crystal in the microscope
     }
 
+    // caluculate the %ee values in the bowls
+    calculateEEInBowls(): void {
+
+        // get the crystals in the bowls
+        const crystalsLeft = this.allCrystals.filter(crystal => crystal.location === CrystalLocation.BOWLLEFT);
+        const crystalsRight = this.allCrystals.filter(crystal => crystal.location === CrystalLocation.BOWLRIGHT);
+
+        // calculate the %ee and update the exts
+        this.eeLeft.setText(this.calculateEEValue(crystalsLeft).toFixed(0));
+        this.eeRight.setText(this.calculateEEValue(crystalsRight).toFixed(0));
+
+    }
+
+    // calculate the %ee value
+    calculateEEValue(crystals: Crystal[]): number {
+
+        // get enantiomeres
+        const enantiomersR = crystals.filter(crystal => crystal.enantiomer === CrystalEnantiomer.R);
+        const enantiomersS = crystals.filter(crystal => crystal.enantiomer === CrystalEnantiomer.S);
+
+        // get the total weights of enantiomeres
+        const weightR = enantiomersR.reduce((accumulator, crystal) => accumulator + crystal.weight, 0);
+        const weightS = enantiomersS.reduce((accumulator, crystal) => accumulator + crystal.weight, 0);
+
+        // calculate the %ee value based on the weights of the enantiomeres
+        const ee = Math.abs(weightR - weightS) / (weightR + weightS) * 100;
+
+        if (isNaN(ee)) {
+            return 0;
+        }
+        else {
+            return ee;
+        }
+
+    }
+
+    // put crystal in a bowl
+    putInBowl(location: CrystalLocation): void {
+
+        const openCrystal = this.getOpenCrystal();
+
+        if (openCrystal) {
+
+            openCrystal.putInBowl(location);
+            this.calculateEEInBowls();
+
+        }
+
+        this.microscope.setVisible(false);        // make microscope invisible
+
+        // check if game is finished
+        if (this.allCrystals.every(crystal => crystal.location === CrystalLocation.BOWLLEFT || crystal.location === CrystalLocation.BOWLRIGHT)) {
+            this.scene.start('Win', {leftBowlEE: Number(this.eeLeft.text), rightBowlEE: Number(this.eeRight.text)});                                // TODO: Very dirty solution, as the text is used to get the number. Should be changed to a better solution
+
+            // destroy the three scene          // TODO: cleanup all objects in the three scene
+
+        }
+
+
+
+    }
 
 }

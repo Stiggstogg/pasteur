@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import WebFontFile from "../helper/WebFontFile";
 import gameOptions from "../helper/gameOptions";
 
 // images
@@ -15,6 +14,11 @@ import microscopeImg from '../assets/images/microscope.png';
 // json
 import simpleShapeJson from '../assets/json/simpleShape.json';
 import crystalDataJson from '../assets/json/crystalData.json';
+
+// fonts
+import minogramPNG from "../assets/fonts/minogram_6x10.png";         // from here: https://frostyfreeze.itch.io/pixel-bitmap-fonts-png-xml (CC0 licensed)
+// @ts-ignore: Suppress this TS error message, as in vite the config (assetsInclude: ['**/*.xml']) is setup in a way that xml files are handled as static assets
+import minogramXML from "../assets/fonts/minogram_6x10.xml";
 
 // "Loading" scene: Loads all assets and shows a progress bar while loading
 export default class LoadingScene extends Phaser.Scene {
@@ -88,8 +92,8 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.json('simpleShape', simpleShapeJson);
         this.load.json('crystalData', crystalDataJson);
 
-        // load fonts (with "webfontloader")
-        this.load.addFile(new WebFontFile(this.load, 'Orbitron'));
+        // load fonts
+        this.load.bitmapFont('minogram', minogramPNG, minogramXML);
 
     }
 
