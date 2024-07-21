@@ -8,15 +8,18 @@ import {Clicks, CrystalEnantiomer, CrystalLocation} from "../helper/types";
 // "Game" scene: Scene for the main game
 export default class GameScene extends Phaser.Scene {
 
-    private head!: Phaser.GameObjects.Image;
+    private head!: Phaser.GameObjects.Image;                // TODO: Implement that the head changes based on the %ee values
     private bowlLeft!: Phaser.GameObjects.Image;
     private bowlRight!: Phaser.GameObjects.Image;
-    private eeLeft!: Phaser.GameObjects.BitmapText;
-    private eeRight!: Phaser.GameObjects.BitmapText;
-    private allCrystals!: Crystal[];
-    private dragging!: boolean;
+    private eeLeft!: number;                                 // %ee value in the left bowl
+    private eeRight!: number;                                // %ee value in the right bowl
+    private eeLeftText!: Phaser.GameObjects.BitmapText;     // text which shows the ee value in the left bowl
+    private eeRightText!: Phaser.GameObjects.BitmapText;    // text which shows the ee value in the right bowl
+    private allCrystals!: Crystal[];                        // all crystals in the game
+    private dragging!: boolean;                             // is the crystal currently dragged?
     private previousPointerPos!: Phaser.Math.Vector2;       // previous pointer position (from last frame)
     private microscope!: Phaser.GameObjects.Image;
+    private threeRenderer!: THREE.WebGLRenderer;
     private threeScene!: THREE.Scene;
     private threeCamera!: THREE.PerspectiveCamera;
 
@@ -33,6 +36,8 @@ export default class GameScene extends Phaser.Scene {
         // initialize parameters
         this.dragging = false;
         this.previousPointerPos = new Phaser.Math.Vector2();
+        this.eeLeft = 0;
+        this.eeRight = 0;
 
         // set up the 2D world (background table, bowls etc...)
         this.setup2DWorld();
@@ -104,8 +109,8 @@ export default class GameScene extends Phaser.Scene {
 
         // %ee values for bowls
         const valueHeight = eeHeight + 0.09;
-        this.eeLeft = this.add.bitmapText(this.bowlLeft.x, gameOptions.gameHeight * valueHeight, 'minogram', '000', 20).setOrigin(0.5);
-        this.eeRight = this.add.bitmapText(this.bowlRight.x, gameOptions.gameHeight * valueHeight, 'minogram', '000', 20).setOrigin(0.5);
+        this.eeLeftText = this.add.bitmapText(this.bowlLeft.x, gameOptions.gameHeight * valueHeight, 'minogram', this.eeLeft.toFixed(), 20).setOrigin(0.5);
+        this.eeRightText = this.add.bitmapText(this.bowlRight.x, gameOptions.gameHeight * valueHeight, 'minogram', this.eeRight.toFixed(), 20).setOrigin(0.5);
 
     }
 
@@ -133,11 +138,11 @@ export default class GameScene extends Phaser.Scene {
         this.threeScene = new THREE.Scene();
 
         // create a renderer
-        const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
+        this.threeRenderer = new THREE.WebGLRenderer({
             canvas: threeCanvas,
             antialias: true
         });
-        renderer.autoClear = false;             // if this is true, the three.js renderer will clear everything (all things rendered by Phaser) before it renders the three.js objects
+        this.threeRenderer.autoClear = false;             // if this is true, the three.js renderer will clear everything (all things rendered by Phaser) before it renders the three.js objects
 
         // add a camera
         this.threeCamera = new THREE.PerspectiveCamera(45, gameOptions.gameWidth / gameOptions.gameHeight, 1, 100);
@@ -148,8 +153,8 @@ export default class GameScene extends Phaser.Scene {
 
         // @ts-expect-error
         view.render = () => {
-            renderer.state.reset();
-            renderer.render(this.threeScene, this.threeCamera);
+            this.threeRenderer.state.reset();
+            this.threeRenderer.render(this.threeScene, this.threeCamera);
         }
 
     }
@@ -253,16 +258,18 @@ export default class GameScene extends Phaser.Scene {
         return this.allCrystals.find(crystal => crystal.location === CrystalLocation.MICROSCOPE);    // get the first crystal in the microscope
     }
 
-    // caluculate the %ee values in the bowls
+    // caluculate the %ee values in the bowls and set the texts
     calculateEEInBowls(): void {
 
         // get the crystals in the bowls
         const crystalsLeft = this.allCrystals.filter(crystal => crystal.location === CrystalLocation.BOWLLEFT);
         const crystalsRight = this.allCrystals.filter(crystal => crystal.location === CrystalLocation.BOWLRIGHT);
 
-        // calculate the %ee and update the exts
-        this.eeLeft.setText(this.calculateEEValue(crystalsLeft).toFixed(0));
-        this.eeRight.setText(this.calculateEEValue(crystalsRight).toFixed(0));
+        // calculate the %ee and update the texts
+        this.eeLeft = this.calculateEEValue(crystalsLeft);
+        this.eeRight = this.calculateEEValue(crystalsRight);
+        this.eeLeftText.setText(this.eeLeft.toFixed());
+        this.eeRightText.setText(this.eeRight.toFixed());
 
     }
 
@@ -305,13 +312,30 @@ export default class GameScene extends Phaser.Scene {
 
         // check if game is finished
         if (this.allCrystals.every(crystal => crystal.location === CrystalLocation.BOWLLEFT || crystal.location === CrystalLocation.BOWLRIGHT)) {
-            this.scene.start('Win', {leftBowlEE: Number(this.eeLeft.text), rightBowlEE: Number(this.eeRight.text)});                                // TODO: Very dirty solution, as the text is used to get the number. Should be changed to a better solution
 
-            // destroy the three scene          // TODO: cleanup all objects in the three scene
+            // create a dummy cube to hide the crystals (for some strange reason the crystals are still visible after the scene is changed).
+            // As soon as all crystals are disposed from the scene and the scene is rendered one last time, the crystals are still visible,
+            // for some strange reason the scene does not rerender when there are no visible objects in it anymore.
+            // Adding an invisible dummy object (and then also dispose it after the last render) solves that.
+            const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+            const material = new THREE.MeshBasicMaterial( { color: 0x00ff00, opacity: 0,  transparent: true} ); // transparent cube with opacity 0 --> not visible
+            const cube = new THREE.Mesh( geometry, material );
+            this.threeScene.add(cube);
+
+            // dispose all crystals
+            this.allCrystals.forEach(crystal => crystal.dispose());
+
+            this.threeRenderer.render(this.threeScene, this.threeCamera);     // render the scene one last time
+
+            // dispose the dummy cube
+            material.dispose();
+            geometry.dispose();
+            this.threeScene.remove(cube);
+
+            // change the scene
+            this.scene.start('Win', {leftBowlEE: this.eeLeft, rightBowlEE: this.eeRight});
 
         }
-
-
 
     }
 

@@ -19,6 +19,8 @@ export default class Crystal {
     private threeScene: THREE.Scene;                            // the three scene
     private readonly camera: THREE.PerspectiveCamera;           // the camera of the scene
     private clickZone!: Phaser.GameObjects.Zone;                // click zone for the crystal
+    private readonly material: THREE.MeshBasicMaterial;                  // material of the crystal
+    private readonly lineMaterial: THREE.LineBasicMaterial;              // material of the edge lines
 
     // Constructor
     constructor(threeScene: THREE.Scene, phaserScene: Phaser.Scene, camera: THREE.PerspectiveCamera, x: number, y: number) {
@@ -36,11 +38,13 @@ export default class Crystal {
         this.enantiomer = Phaser.Math.RND.pick([CrystalEnantiomer.R, CrystalEnantiomer.S]);
 
         // setup the material for the crystal
-        const material = new THREE.MeshBasicMaterial({
+        this.material = new THREE.MeshBasicMaterial({
             color: gameOptions.faceColor,
             opacity: gameOptions.faceAlpha,
             transparent: true
         });
+
+        this.lineMaterial = new THREE.LineBasicMaterial({color: gameOptions.lineColor});
 
         // get the crystal data
         const crystalData: CrystalData = phaserScene.cache.json.get('crystalData');
@@ -49,12 +53,12 @@ export default class Crystal {
         const geometry = this.setupGeometry(crystalData);
 
         // create the 3D crystal mesh
-        this.mesh = new THREE.Mesh(geometry, material);
+        this.mesh = new THREE.Mesh(geometry, this.material);
 
         // create the edge lines
         this.edgeLines = new THREE.LineSegments(
             new THREE.EdgesGeometry(geometry, 2),                       // threshold angle needs to be set to 2, as one plane is not perfectly planar and this will create a line on the plane
-            new THREE.LineBasicMaterial({color: gameOptions.lineColor}));
+            this.lineMaterial);
 
         // add the 3D crystal mesh and the edge lines to the THREE scene
         this.threeScene.add(this.mesh);
@@ -243,6 +247,24 @@ export default class Crystal {
         this.clickZone.on('pointerdown', () => {
             this.clickZone.scene.events.emit(Clicks.CRYSTAL, this);
         });
+
+    }
+
+    // dispose the crystal (remove it from the three scene)
+    public dispose() {
+
+        // based on this: https://threejs.org/docs/#manual/en/introduction/How-to-dispose-of-objects
+
+        // dispose the geometry
+        this.edgeLines.geometry.dispose();
+        this.mesh.geometry.dispose();
+
+        this.material.dispose();
+        this.lineMaterial.dispose();
+
+        // remove the mesh and edge lines from the scene
+        this.threeScene.remove(this.mesh);
+        this.threeScene.remove(this.edgeLines);
 
     }
 
