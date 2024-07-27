@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 import gameOptions from "../helper/gameOptions";
+import {WinSceneData} from "../helper/types";
 
 // "Win" scene: Scene which is shown when you finished the game
 export default class WinScene extends Phaser.Scene {
 
-    private bowlData!: {leftBowlEE: number, rightBowlEE: number};
+    private winData!: WinSceneData
 
     // Constructor
     constructor() {
@@ -14,9 +15,9 @@ export default class WinScene extends Phaser.Scene {
     }
 
     // Initialize parameters
-    init(bowlData: {leftBowlEE: number, rightBowlEE: number}): void {
+    init(data: WinSceneData): void {
 
-        this.bowlData = bowlData;
+        this.winData = data;
 
     }
 
@@ -24,20 +25,30 @@ export default class WinScene extends Phaser.Scene {
     create(): void {
 
         // Texts
-        this.add.bitmapText(0.5 * gameOptions.gameWidth, gameOptions.gameHeight * 0.25, 'minogram', 'Congratulations!', 30).setOrigin(0.5);
-        this.add.bitmapText(0.5 * gameOptions.gameWidth, gameOptions.gameHeight * 0.4, 'minogram', 'You sorted all crystals', 20).setOrigin(0.5);
+        this.add.bitmapText(0.5 * gameOptions.gameWidth, gameOptions.gameHeight * 0.15, 'minogram', 'Congratulations!', 30).setOrigin(0.5);
+        this.add.bitmapText(0.5 * gameOptions.gameWidth, gameOptions.gameHeight * 0.30, 'minogram', 'You sorted all crystals', 20).setOrigin(0.5);
 
-        this.add.bitmapText(0.25 * gameOptions.gameWidth, gameOptions.gameHeight * 0.6, 'minogram', 'Left bowl:', 20).setOrigin(0, 0.5);
-        this.add.bitmapText(0.25 * gameOptions.gameWidth, gameOptions.gameHeight * 0.7, 'minogram', 'Right bowl:', 20).setOrigin(0, 0.5);
+        const startY = 0.45 * gameOptions.gameHeight;
+        const distanceY = 0.1 * gameOptions.gameHeight;
+        let startX = 0.25 * gameOptions.gameWidth;
 
-        this.add.bitmapText(0.6 * gameOptions.gameWidth, gameOptions.gameHeight * 0.6, 'minogram', this.bowlData.leftBowlEE.toFixed(0) + ' %ee', 20).setOrigin(0, 0.5);
-        this.add.bitmapText(0.6 * gameOptions.gameWidth, gameOptions.gameHeight * 0.7, 'minogram', this.bowlData.rightBowlEE.toFixed(0) + ' %ee', 20).setOrigin(0, 0.5);
+        this.add.bitmapText(startX, startY, 'minogram', 'Left bowl:', 20).setOrigin(0, 0.5);
+        this.add.bitmapText(startX, startY + distanceY, 'minogram', 'Right bowl:', 20).setOrigin(0, 0.5);
+        this.add.bitmapText(startX, startY + 2 * distanceY, 'minogram', 'Time:', 20).setOrigin(0, 0.5);
+        this.add.bitmapText(startX, startY + 3 * distanceY, 'minogram', 'Score:', 20).setOrigin(0, 0.5);
 
-        this.add.bitmapText(0.5 * gameOptions.gameWidth, gameOptions.gameHeight * 0.9, 'minogram', 'Click anywhere to start a new game.', 10).setOrigin(0.5);
+        startX = 0.6 * gameOptions.gameWidth;
+
+        this.add.bitmapText(startX, startY, 'minogram', this.winData.leftBowlEE.toFixed(0) + ' %ee', 20).setOrigin(0, 0.5);
+        this.add.bitmapText(startX, startY + distanceY, 'minogram', this.winData.rightBowlEE.toFixed(0) + ' %ee', 20).setOrigin(0, 0.5);
+        this.add.bitmapText(startX, startY + 2 * distanceY, 'minogram', this.winData.time, 20).setOrigin(0, 0.5);
+        this.add.bitmapText(startX, startY + 3 * distanceY, 'minogram', this.winData.score.toFixed(0), 20).setOrigin(0, 0.5);
+
+        this.add.bitmapText(0.5 * gameOptions.gameWidth, gameOptions.gameHeight * 0.9, 'minogram', 'Click anywhere to go back', 10).setOrigin(0.5);
 
         // Click event
         this.input.on('pointerdown', () => {
-            this.scene.start('Game');
+            this.scene.start('Home');
         });
     }
 

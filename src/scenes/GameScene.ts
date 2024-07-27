@@ -8,11 +8,12 @@ import {Clicks, CrystalEnantiomer, CrystalLocation} from "../helper/types";
 // "Game" scene: Scene for the main game
 export default class GameScene extends Phaser.Scene {
 
-    private head!: Phaser.GameObjects.Image;                // TODO: Implement that the head changes based on the %ee values
+    private head!: Phaser.GameObjects.Image;
     private bowlLeft!: Phaser.GameObjects.Image;
     private bowlRight!: Phaser.GameObjects.Image;
     private eeLeft!: number;                                 // %ee value in the left bowl
     private eeRight!: number;                                // %ee value in the right bowl
+    private averageEE!: number;                             // average %ee value of the two bowls
     private eeLeftText!: Phaser.GameObjects.BitmapText;     // text which shows the ee value in the left bowl
     private eeRightText!: Phaser.GameObjects.BitmapText;    // text which shows the ee value in the right bowl
     private allCrystals!: Crystal[];                        // all crystals in the game
@@ -22,6 +23,10 @@ export default class GameScene extends Phaser.Scene {
     private threeRenderer!: THREE.WebGLRenderer;
     private threeScene!: THREE.Scene;
     private threeCamera!: THREE.PerspectiveCamera;
+    private startTime!: number;                             // start time of the game (when the first crystal was clicked
+    private elapsedTime!: number;                           // elapsed time of the game (time since the first crystal was clicked)
+    private elapsedTimeText!: Phaser.GameObjects.BitmapText; // text which shows the elapsed time
+    private timerRunning!: boolean;                         // is the timer running?
 
     // Constructor
     constructor() {
@@ -38,6 +43,10 @@ export default class GameScene extends Phaser.Scene {
         this.previousPointerPos = new Phaser.Math.Vector2();
         this.eeLeft = 0;
         this.eeRight = 0;
+        this.averageEE = 0;
+        this.startTime = 0;
+        this.elapsedTime = 0;
+        this.timerRunning = false;
 
         // set up the 2D world (background table, bowls etc...)
         this.setup2DWorld();
@@ -80,6 +89,12 @@ export default class GameScene extends Phaser.Scene {
 
         }
 
+        // update the elapsed time if the timer is running and set the text
+        if (this.timerRunning) {
+            this.elapsedTime = Date.now() - this.startTime;
+            this.elapsedTimeText.setText(this.formatTime(Math.floor(this.elapsedTime)));
+        }
+
     }
 
     setup2DWorld(): void {
@@ -109,8 +124,14 @@ export default class GameScene extends Phaser.Scene {
 
         // %ee values for bowls
         const valueHeight = eeHeight + 0.09;
-        this.eeLeftText = this.add.bitmapText(this.bowlLeft.x, gameOptions.gameHeight * valueHeight, 'minogram', this.eeLeft.toFixed(), 20).setOrigin(0.5);
-        this.eeRightText = this.add.bitmapText(this.bowlRight.x, gameOptions.gameHeight * valueHeight, 'minogram', this.eeRight.toFixed(), 20).setOrigin(0.5);
+        this.eeLeftText = this.add.bitmapText(this.bowlLeft.x, gameOptions.gameHeight * valueHeight, 'minogram', '-', 20).setOrigin(0.5);
+        this.eeRightText = this.add.bitmapText(this.bowlRight.x, gameOptions.gameHeight * valueHeight, 'minogram', '-', 20).setOrigin(0.5);
+
+        // time text
+        const distanceMid = 0.08;
+        const timeY = (eeHeight + valueHeight) / 2;
+        this.add.bitmapText(gameOptions.gameWidth * (0.5 - distanceMid), gameOptions.gameHeight * timeY, 'minogram', 'TIME', 20).setOrigin(1, 0.5);
+        this.elapsedTimeText = this.add.bitmapText(gameOptions.gameWidth * (0.5 + distanceMid), gameOptions.gameHeight * timeY, 'minogram', '00:00', 20).setOrigin(0, 0.5);
 
     }
 
@@ -228,6 +249,12 @@ export default class GameScene extends Phaser.Scene {
         // Click of the crystal
         this.events.on(Clicks.CRYSTAL, (crystal: Crystal) => {
 
+            // check if this is the first click (timer is running) and start the timer
+            if (!this.timerRunning) {
+                this.startTime = Date.now();
+                this.timerRunning = true;
+            }
+
             // put the crystal in the microscope
             if (!this.getOpenCrystal()) {        // check if one crystal is in the microscope ("undefined" is false in javascript, which means that if there is no crystal in the microscope, the condition is true)
                 crystal.putInMicroscope();
@@ -258,33 +285,53 @@ export default class GameScene extends Phaser.Scene {
         return this.allCrystals.find(crystal => crystal.location === CrystalLocation.MICROSCOPE);    // get the first crystal in the microscope
     }
 
-    // caluculate the %ee values in the bowls and set the texts
+    // get crystals in bowl
+    getCrystalInBowl(bowl: CrystalLocation): Crystal[] {
+        return this.allCrystals.filter(crystal => crystal.location === bowl);
+    }
+
+    // calculate the %ee values in the bowls, set the texts and calculate the average %ee value
     calculateEEInBowls(): void {
 
         // get the crystals in the bowls
-        const crystalsLeft = this.allCrystals.filter(crystal => crystal.location === CrystalLocation.BOWLLEFT);
-        const crystalsRight = this.allCrystals.filter(crystal => crystal.location === CrystalLocation.BOWLRIGHT);
+        const crystalsLeft = this.getCrystalInBowl(CrystalLocation.BOWLLEFT);
+        const crystalsRight = this.getCrystalInBowl(CrystalLocation.BOWLRIGHT);
 
         // calculate the %ee and update the texts
         this.eeLeft = this.calculateEEValue(crystalsLeft);
         this.eeRight = this.calculateEEValue(crystalsRight);
-        this.eeLeftText.setText(this.eeLeft.toFixed());
-        this.eeRightText.setText(this.eeRight.toFixed());
+
+        if (crystalsLeft.length > 0) {                  // only set the text to the value if there are crystals in the bowl
+            this.eeLeftText.setText(this.eeLeft.toFixed());
+        }
+        else {
+            this.eeLeftText.setText('-');
+        }
+
+        if (crystalsRight.length > 0) {                  // only set the text to the value if there are crystals in the bowl
+            this.eeRightText.setText(this.eeRight.toFixed());
+        }
+        else {
+            this.eeRightText.setText('-');
+        }
+
+        // calculate the average %ee value
+        this.averageEE = this.calculateAverageEEValue(crystalsLeft, crystalsRight);
 
     }
 
-    // calculate the %ee value
+    // calculate the %ee value from a group of crystals
     calculateEEValue(crystals: Crystal[]): number {
 
-        // get enantiomeres
+        // get enantiomers
         const enantiomersR = crystals.filter(crystal => crystal.enantiomer === CrystalEnantiomer.R);
         const enantiomersS = crystals.filter(crystal => crystal.enantiomer === CrystalEnantiomer.S);
 
-        // get the total weights of enantiomeres
+        // get the total weights of enantiomers
         const weightR = enantiomersR.reduce((accumulator, crystal) => accumulator + crystal.weight, 0);
         const weightS = enantiomersS.reduce((accumulator, crystal) => accumulator + crystal.weight, 0);
 
-        // calculate the %ee value based on the weights of the enantiomeres
+        // calculate the %ee value based on the weights of the enantiomers
         const ee = Math.abs(weightR - weightS) / (weightR + weightS) * 100;
 
         if (isNaN(ee)) {
@@ -296,6 +343,26 @@ export default class GameScene extends Phaser.Scene {
 
     }
 
+    // calculate the weighted average %ee value of the crystals in the left and right bowl
+    calculateAverageEEValue(crystalsLeft: Crystal[], crystalsRight: Crystal[]): number {
+
+        // get the total weights of the crystals in the bowls
+        const weightLeft = crystalsLeft.reduce((accumulator, crystal) => accumulator + crystal.weight, 0);
+        const weightRight = crystalsRight.reduce((accumulator, crystal) => accumulator + crystal.weight, 0);
+
+        // calculate the weighted average %ee value
+        const averageEE = (this.eeLeft * weightLeft + this.eeRight * weightRight) / (weightLeft + weightRight);
+
+        // set the averageEE value (set it to 0 if it is NaN, e.g. when no crystals are yet in the bowls)
+        if (isNaN(averageEE)) {
+            return 0;
+        }
+        else {
+            return averageEE;
+        }
+
+    }
+
     // put crystal in a bowl
     putInBowl(location: CrystalLocation): void {
 
@@ -303,12 +370,32 @@ export default class GameScene extends Phaser.Scene {
 
         if (openCrystal) {
 
-            openCrystal.putInBowl(location);
-            this.calculateEEInBowls();
+            openCrystal.putInBowl(location);        // put the crystal in the bowl
+            this.calculateEEInBowls();              // calculate the %ee values in the bowls and the average %ee value
+
+            // change the head based on the average ee (but only when two or more crystals are in the bowls
+            if (this.getCrystalInBowl(CrystalLocation.BOWLLEFT).length + this.getCrystalInBowl(CrystalLocation.BOWLRIGHT).length >= 2) {
+                if (this.averageEE >= gameOptions.happyFaceLimit) {
+                    this.head.setFrame(2);            // change the head to the happy face
+                }
+                else if (this.averageEE <= gameOptions.sadFaceLimit) {
+                    this.head.setFrame(1);            // change the head to the sad face
+                }
+                else {
+                    this.head.setFrame(0);            // change the head to the neutral face
+                }
+            }
 
         }
 
         this.microscope.setVisible(false);        // make microscope invisible
+
+        // check if game is finished
+        this.finishGame();
+
+    }
+
+    finishGame() {
 
         // check if game is finished
         if (this.allCrystals.every(crystal => crystal.location === CrystalLocation.BOWLLEFT || crystal.location === CrystalLocation.BOWLRIGHT)) {
@@ -332,10 +419,36 @@ export default class GameScene extends Phaser.Scene {
             geometry.dispose();
             this.threeScene.remove(cube);
 
+            // calculate the final score
+            const score = this.calculateScore();
+
             // change the scene
-            this.scene.start('Win', {leftBowlEE: this.eeLeft, rightBowlEE: this.eeRight});
+            this.scene.start('Win', {leftBowlEE: this.eeLeft, rightBowlEE: this.eeRight, time: this.formatTime(this.elapsedTime), score: score});
 
         }
+
+    }
+
+    // Create a formated output of the time in the format mm:ss
+    formatTime(time: number): string {
+
+        // Calculate total minutes and seconds
+        const minutes = Math.floor(time / 60000);
+        const seconds = Math.floor((time % 60000) / 1000);
+
+        // Format minutes and seconds to always have two digits
+        const formattedMinutes = minutes.toString().padStart(2, '0');
+        const formattedSeconds = seconds.toString().padStart(2, '0');
+
+        // Return the formatted time string
+        return `${formattedMinutes}:${formattedSeconds}`;
+
+    }
+
+    // Calculate the Score
+    calculateScore(): number {
+
+        return this.averageEE * (gameOptions.parTime / (this.elapsedTime / 1000)) * gameOptions.scoreMultiplier;
 
     }
 

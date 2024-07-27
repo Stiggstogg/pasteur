@@ -8,6 +8,7 @@ import headsImg from '../assets/images/heads.png';
 import bowlLeftImg from '../assets/images/bowl-left.gif';
 import bowlRightImg from '../assets/images/bowl-right.gif';
 import microscopeImg from '../assets/images/microscope.png';
+import titleImg from '../assets/images/title.gif';
 
 // audio
 
@@ -81,6 +82,7 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.image('bowlLeft', bowlLeftImg);
         this.load.image('bowlRight', bowlRightImg);
         this.load.image('microscope', microscopeImg);
+        this.load.image('title', titleImg);
 
         // spritesheets
         this.load.spritesheet('head', headsImg, {frameWidth: 58, frameHeight: 83});
@@ -99,8 +101,8 @@ export default class LoadingScene extends Phaser.Scene {
 
     // Add the animations and change to "Home" scene, directly after loading
     create() {
-        this.scene.start('Game');       // TODO: Remove after testing (Skips the menu screen)
-        //this.scene.start('Home');
+        //this.scene.start('Game');       // TODO: Remove after testing (Skips the menu screen)
+        this.scene.start('Home');
     }
 
 }

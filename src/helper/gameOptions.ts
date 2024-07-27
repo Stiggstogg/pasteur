@@ -26,6 +26,10 @@ class GameOptions {
     public readonly bowlLeftPosition: {x: number, y: number};
     public readonly bowlRightPosition: {x: number, y: number};
     public readonly bowlCrystalSpread: number;
+    public readonly happyFaceLimit: number;
+    public readonly sadFaceLimit: number;
+    public readonly parTime: number;
+    public readonly scoreMultiplier: number;
 
     constructor() {
 
@@ -91,6 +95,18 @@ class GameOptions {
         };
         this.crystalTableDistance =  0.13;   // distance between the crystals on the table (relative distance to game width)
         this.dragSensitivity = Math.PI;      // sensitivity which is used to determine the dragging speed, unit rad / game.width (how many radians should the crytal rotate if the mouse is moved from left edge of the canvas to the right edge)
+
+        // ------------------------
+        // Face limits
+        // ------------------------
+        this.happyFaceLimit = 70;           // if the average %ee is higher than this then the happy face is shown
+        this.sadFaceLimit = 30;             // if the average %ee is lower than this then the sad face is shown
+
+        // ------------------------
+        // Scoring parameters
+        // ------------------------
+        this.parTime = 30;                  // time in seconds which is used to calculate the factor for the score, if the player is faster than this time, the multiplier is > 1
+        this.scoreMultiplier = 1000;             // multiplier for the score which is used to make the number higher and look better :)
 
     }
 

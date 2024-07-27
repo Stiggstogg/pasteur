@@ -4,14 +4,9 @@ import gameOptions from "../helper/gameOptions";
 // "Home" scene: Main game menu scene
 export default class HomeScene extends Phaser.Scene {
 
-    private title!: Phaser.GameObjects.Text;
-    private titleText!: string;
     private menuEntries!: string[];
-    private instructionText!: string;
-    private titleStyle!: Phaser.Types.GameObjects.Text.TextStyle;
     private inactiveStyle!: Phaser.Types.GameObjects.Text.TextStyle;
     private activeStyle!: Phaser.Types.GameObjects.Text.TextStyle;
-    private instructionStyle!: Phaser.Types.GameObjects.Text.TextStyle;
     private selected!: number;
     private items!: Phaser.GameObjects.Text[];
 
@@ -26,9 +21,6 @@ export default class HomeScene extends Phaser.Scene {
     // Initialize parameters
     init(): void {
 
-        // title text
-        this.titleText = 'Pasteur the Game';
-
         // menu entries
         this.menuEntries = [
             'Start',
@@ -36,34 +28,18 @@ export default class HomeScene extends Phaser.Scene {
             'Credits'
         ];
 
-        // instruction text
-        this.instructionText = 'Use arrow keys or W, A, S, D to select\nUse [SPACE] or [ENTER] to confirm';
-
-        // styles of the title menu entries (active or inactive) and instruction text
-        this.titleStyle = {
-            fontFamily: 'Orbitron',
-            fontSize: '40px',
-            color: '#FFFF00',
-            fontStyle: 'bold'
-        }
-
         this.inactiveStyle = {
             fontFamily: 'Arial',
-            fontSize: '20px',
-            color: '#ffff00',
+            fontSize: '24px',
+            color: '#000000',
             fontStyle: '',
         }
 
         this.activeStyle = {
             fontFamily: 'Arial',
-            fontSize: '24px',
-            color: '#0000ff',
+            fontSize: '32px',
+            color: '#ff0000',
             fontStyle: 'bold',
-        }
-
-        this.instructionStyle = {
-            font: '12px Arial',
-            color: '#27ff00'
         }
 
         // initialize empty parameters
@@ -75,11 +51,8 @@ export default class HomeScene extends Phaser.Scene {
     // Shows the home screen and waits for the user to select a menu entry
     create(): void {
 
-        // Title
-        this.title = this.add.text(gameOptions.gameWidth / 2, gameOptions.gameHeight * 0.2, this.titleText, this.titleStyle).setOrigin(0.5, 0.5);
-
-        // Instruction / press key text
-        this.add.text(gameOptions.gameWidth / 2, gameOptions.gameHeight - 46, this.instructionText, this.instructionStyle).setOrigin(0.5);
+        // Background
+        this.add.image(0, 0, 'title').setOrigin(0);
 
         // Create the menu with its entries
         this.createMenu(this.menuEntries);
@@ -93,13 +66,13 @@ export default class HomeScene extends Phaser.Scene {
     createMenu(menuEntries: string[]): void {
 
         // start position and y space between the entries
-        const start = {x: gameOptions.gameWidth / 2, y: this.title.y + gameOptions.gameHeight * 0.2};      // start position
-        const ySpace = gameOptions.gameHeight * 0.1;                                         // ySpace between the entries
+        const start = {x: gameOptions.gameWidth * 0.03, y: gameOptions.gameHeight * 0.6};      // start position
+        const ySpace = gameOptions.gameHeight * 0.13;                                         // ySpace between the entries
 
         // create menu items (loop through each item)
         for (let i = 0;i < menuEntries.length; i++) {
 
-            const item = this.add.text(start.x, start.y + i * ySpace, menuEntries[i]).setOrigin(0.5);
+            const item = this.add.text(start.x, start.y + i * ySpace, menuEntries[i]).setOrigin(0, 0.5);
 
             item.setInteractive();          // set interactive
 

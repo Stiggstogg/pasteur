@@ -31,3 +31,10 @@ export interface CrystalDataTriangulated {
     vertices: number[],
     faceIndices: number[]
 }
+
+export interface WinSceneData {
+    leftBowlEE: number,
+    rightBowlEE: number,
+    time: string,
+    score: number
+}
