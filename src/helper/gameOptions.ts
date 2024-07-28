@@ -30,6 +30,7 @@ class GameOptions {
     public readonly sadFaceLimit: number;
     public readonly parTime: number;
     public readonly scoreMultiplier: number;
+    public readonly keyboardRotationSpeed: number;
 
     constructor() {
 
@@ -107,6 +108,11 @@ class GameOptions {
         // ------------------------
         this.parTime = 30;                  // time in seconds which is used to calculate the factor for the score, if the player is faster than this time, the multiplier is > 1
         this.scoreMultiplier = 1000;             // multiplier for the score which is used to make the number higher and look better :)
+
+        // ------------------------
+        // Keyboard controls
+        // ------------------------
+        this.keyboardRotationSpeed = 0.05;   // speed of the rotation when the keyboard is used (in radians per frame)
 
     }
 

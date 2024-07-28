@@ -27,6 +27,14 @@ export default class GameScene extends Phaser.Scene {
     private elapsedTime!: number;                           // elapsed time of the game (time since the first crystal was clicked)
     private elapsedTimeText!: Phaser.GameObjects.BitmapText; // text which shows the elapsed time
     private timerRunning!: boolean;                         // is the timer running?
+    private keyW!: Phaser.Input.Keyboard.Key;               // key W
+    private keyA!: Phaser.Input.Keyboard.Key;               // key A
+    private keyS!: Phaser.Input.Keyboard.Key;               // key S
+    private keyD!: Phaser.Input.Keyboard.Key;               // key D
+    private keyUp!: Phaser.Input.Keyboard.Key;              // key Up arrow
+    private keyLeft!: Phaser.Input.Keyboard.Key;            // key Left arrow
+    private keyDown!: Phaser.Input.Keyboard.Key;            // key Down arrow
+    private keyRight!: Phaser.Input.Keyboard.Key;           // key Right arrow
 
     // Constructor
     constructor() {
@@ -57,6 +65,9 @@ export default class GameScene extends Phaser.Scene {
         // set up the THREE canvas and scene (3D world)
         this.setupThree();
 
+        // add keyboard inputs
+        this.addKeys();
+
         // create the crystals
         this.createCrystals();
 
@@ -68,15 +79,16 @@ export default class GameScene extends Phaser.Scene {
     // Update function for the game loop.
     update(_time: number, _delta: number): void {       // remove underscore if time and delta is needed
 
-        // rotate the crystal when dragging is activated
-        if (this.dragging && !this.input.activePointer.noButtonDown()) {                          // not sure if !this.input.activePointer.noButtonDown() is necessary (comes from this example: https://labs.phaser.io/view.html?src=src/input/pointer/pointer%20buttons.js)
+        // get the crystal in the microscope
+        const crystal = this.getOpenCrystal();
 
-            // get the crystal in the microscope
-            const crystal = this.getOpenCrystal();
+        if (crystal) {      // check if a crystal is open (in the microscope)
 
-            // rotate the crystal
-            if (crystal) {
+            // rotate the crystal when dragging is activated
+            if (this.dragging && !this.input.activePointer.noButtonDown()) {                          // not sure if !this.input.activePointer.noButtonDown() is necessary (comes from this example: https://labs.phaser.io/view.html?src=src/input/pointer/pointer%20buttons.js)
 
+
+                // rotate the crystal
                 const currentPointerPos = new Phaser.Math.Vector2(this.input.activePointer.position.x, this.input.activePointer.position.y);
 
                 // rotate the crystal based on the difference between the previous pointer position and the current pointer position
@@ -86,6 +98,25 @@ export default class GameScene extends Phaser.Scene {
                 this.previousPointerPos = currentPointerPos;
 
             }
+
+            // rotate the crystal when arrow keys are pressed
+            let keyRotationX = 0;
+            let keyRotationY = 0
+
+            if (this.keyW.isDown || this.keyUp.isDown) {
+                keyRotationX += -1;
+            }
+            if (this.keyS.isDown || this.keyDown.isDown) {
+                keyRotationX += 1;
+            }
+            if (this.keyA.isDown || this.keyLeft.isDown) {
+                keyRotationY += -1;
+            }
+            if (this.keyD.isDown || this.keyRight.isDown) {
+                keyRotationY += +1;
+            }
+
+            crystal.rotate(keyRotationX * gameOptions.keyboardRotationSpeed, keyRotationY * gameOptions.keyboardRotationSpeed);
 
         }
 
@@ -192,6 +223,49 @@ export default class GameScene extends Phaser.Scene {
         threeCanvas.style.height = phaserCanvas.style.height;                // adapt height
         threeCanvas.style.marginLeft = phaserCanvas.style.marginLeft;        // adapt margin
         threeCanvas.style.marginTop = phaserCanvas.style.marginTop;           // adapt margin
+
+    }
+
+    // add keyboard inputs
+    addKeys() {
+
+        // add keys (to rotate the crystals)
+        this.keyW = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.keyA = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.keyS = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.keyD = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+
+        this.keyUp = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+        this.keyLeft = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        this.keyDown = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+        this.keyRight = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+
+        // add keys to pickup and put down crystals
+        const keySpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);         // take next crystal and drop it again
+        const keyG = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.G);                 // key to put the crystal in the left bowl
+        const keyH = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.H);                 // key to put the crystal in the right bowl
+
+        keySpace.on('down', () => {
+            const crystal = this.getOpenCrystal();
+            if (crystal) {
+                crystal.putOnTable();                       // put the crystal back on the table
+                this.microscope.setVisible(false);          // make microscope invisible
+            }
+            else {
+                const nextCrystal = this.allCrystals.find(crystal => crystal.location === CrystalLocation.TABLE);
+                if (nextCrystal) {
+                    this.events.emit(Clicks.CRYSTAL, nextCrystal);        // emit the click event for the next crystal
+                }
+            }
+        });
+        
+        keyG.on('down', () => {
+            this.putInBowl(CrystalLocation.BOWLLEFT);
+        });
+        
+        keyH.on('down', () => {
+            this.putInBowl(CrystalLocation.BOWLRIGHT);
+        });
 
     }
 
