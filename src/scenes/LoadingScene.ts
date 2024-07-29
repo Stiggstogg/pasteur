@@ -11,6 +11,14 @@ import microscopeImg from '../assets/images/microscope.png';
 import titleImg from '../assets/images/title.gif';
 
 // audio
+import crystalToBowlAudio from '../assets/audio/CrystalToBowl.mp3';
+import crystalToBowlJSON from '../assets/audio/CrystalToBowl.json';
+import crystalFromTableAudio from '../assets/audio/CrystalFromTable.mp3';
+import crystalFromTableJSON from '../assets/audio/CrystalFromTable.json';
+import crystalToTableAudio from '../assets/audio/CrystalToTable.mp3';
+import crystalToTableJSON from '../assets/audio/CrystalToTable.json';
+import pasteurVoiceAudio from '../assets/audio/PasteurVoice.mp3';
+import pasteurVoiceJSON from '../assets/audio/PasteurVoice.json';
 
 // json
 import simpleShapeJson from '../assets/json/simpleShape.json';
@@ -88,7 +96,14 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.spritesheet('head', headsImg, {frameWidth: 58, frameHeight: 83});
 
         // load audio
-        //this.load.audio('miss', 'assets/audio/Pew.mp3');
+        // @ts-ignore (this is needed here as instead of a string also the object directly can be provided)
+        this.load.audioSprite('crystalToBowl', crystalToBowlJSON, crystalToBowlAudio);
+        // @ts-ignore
+        this.load.audioSprite('crystalFromTable', crystalFromTableJSON, crystalFromTableAudio);
+        // @ts-ignore
+        this.load.audioSprite('crystalToTable', crystalToTableJSON, crystalToTableAudio);
+        // @ts-ignore
+        this.load.audioSprite('pasteurVoice', pasteurVoiceJSON, pasteurVoiceAudio);
 
         // load json
         this.load.json('simpleShape', simpleShapeJson);

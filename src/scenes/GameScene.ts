@@ -318,6 +318,8 @@ export default class GameScene extends Phaser.Scene {
 
             this.microscope.setVisible(false);        // make microscope invisible
 
+            this.sound.playAudioSprite('crystalToTable', Phaser.Math.RND.pick(['0', '1', '2']));     // play the sound
+
         });
 
         // Click of the crystal
@@ -333,6 +335,8 @@ export default class GameScene extends Phaser.Scene {
             if (!this.getOpenCrystal()) {        // check if one crystal is in the microscope ("undefined" is false in javascript, which means that if there is no crystal in the microscope, the condition is true)
                 crystal.putInMicroscope();
                 this.microscope.setVisible(true);        // make microscope visible
+
+                this.sound.playAudioSprite('crystalFromTable', Phaser.Math.RND.pick(['0', '1', '2']));     // play the sound
             }
 
         });
@@ -444,21 +448,54 @@ export default class GameScene extends Phaser.Scene {
 
         if (openCrystal) {
 
+            const previousAverageEE = this.averageEE;        // save the previous average %ee value
+
             openCrystal.putInBowl(location);        // put the crystal in the bowl
             this.calculateEEInBowls();              // calculate the %ee values in the bowls and the average %ee value
 
-            // change the head based on the average ee (but only when two or more crystals are in the bowls
-            if (this.getCrystalInBowl(CrystalLocation.BOWLLEFT).length + this.getCrystalInBowl(CrystalLocation.BOWLRIGHT).length >= 2) {
-                if (this.averageEE >= gameOptions.happyFaceLimit) {
+            // change the head based on the average ee and play a sound if the head is changed
+            // --------------------------------------------------------------------------------
+
+            // check if compared to the previous average EE a change in the face expression should happen (if the average got over a limit
+            let change = false;
+
+            if (this.averageEE >= gameOptions.happyFaceLimit && previousAverageEE < gameOptions.happyFaceLimit) {       // check if the average %ee is higher than the happy face limit and the previous average %ee was lower
+                change = true;
+            }
+            else if (this.averageEE <= gameOptions.sadFaceLimit && previousAverageEE > gameOptions.sadFaceLimit) {      // check if the average %ee is lower than the sad face limit and the previous average %ee was higher
+                change = true;
+            }
+            else if (this.averageEE < gameOptions.happyFaceLimit && this.averageEE > gameOptions.sadFaceLimit && (previousAverageEE >= gameOptions.happyFaceLimit || previousAverageEE <= gameOptions.sadFaceLimit)) {  // check if the average %ee is between the happy and sad face limit and the previous average %ee was either higher than the happy face limit or lower than the sad face limit
+                change = true;
+            }
+
+            const crystalsInBowl = this.getCrystalInBowl(CrystalLocation.BOWLLEFT).length + this.getCrystalInBowl(CrystalLocation.BOWLRIGHT).length;
+
+            if (crystalsInBowl >= 2) {                                                                          // only change the face when there are two or more crystals in the bowls
+                if (this.averageEE >= gameOptions.happyFaceLimit && (change || crystalsInBowl === 2)) {       // check if the average %ee is higher than the happy face limit and the face should be changed (or if there are only two crystals in the bowls)
                     this.head.setFrame(2);            // change the head to the happy face
+                    this.sound.playAudioSprite('pasteurVoice', 'happy');     // play the sound
                 }
-                else if (this.averageEE <= gameOptions.sadFaceLimit) {
+                else if (this.averageEE <= gameOptions.sadFaceLimit && (change || crystalsInBowl === 2)) {      // check if the average %ee is lower than the sad face limit and the face should be changed (or if there are only two crystals in the bowls)
                     this.head.setFrame(1);            // change the head to the sad face
+                    this.sound.playAudioSprite('pasteurVoice', 'sad');     // play the sound
                 }
-                else {
+                else if (this.averageEE < gameOptions.happyFaceLimit && change) {                               // check if the average %ee is between the happy and sad face limit and the face should be changed, here the face should not be changed if there are two crystals in the bow, as the face always starts neutral
                     this.head.setFrame(0);            // change the head to the neutral face
+                    this.sound.playAudioSprite('pasteurVoice', 'neutral');     // play the sound
                 }
             }
+
+            // sound effects
+            let pan = 0;
+            if (location === CrystalLocation.BOWLLEFT) {        // pan the sound either to the left or right depending on the bowl to which it is put in
+                pan = -0.7;
+            }
+            else {
+                pan = 0.7;
+            }
+
+            this.sound.playAudioSprite('crystalToBowl', Phaser.Math.RND.pick(['0', '1', '2']), {pan: pan});     // play the sound
 
         }
 
