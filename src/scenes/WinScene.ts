@@ -79,6 +79,12 @@ export default class WinScene extends Phaser.Scene {
 
         });
 
+        // ensure the music is really stopped
+        this.events.on('shutdown', () => {
+            this.sound.get('soundtrackGame').stop();
+        });
+
+
     }
 
 

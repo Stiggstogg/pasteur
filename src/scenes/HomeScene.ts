@@ -159,9 +159,11 @@ export default class HomeScene extends Phaser.Scene {
 
         for (let i in this.items) {
             this.items[i].setFontSize(this.inactiveStyle.size).setTint(this.inactiveStyle.color);         // change the style of all entries to the inactive style
+            this.items[i].input?.hitArea.setSize(this.items[i].width, this.items[i].height);
         }
 
         this.items[this.selected].setFontSize(this.activeStyle.size).setTint(this.activeStyle.color);   // change the style of the selected entry to the active style
+        this.items[this.selected].input?.hitArea.setSize(this.items[this.selected].width, this.items[this.selected].height);
 
     }
 
@@ -225,7 +227,12 @@ export default class HomeScene extends Phaser.Scene {
 
     // start the music
     startMusic() {
-        this.soundtrack = this.sound.add('soundtrackMenu') as Phaser.Sound.WebAudioSound;
+
+        this.soundtrack = this.sound.get('soundtrackMenu') as Phaser.Sound.WebAudioSound;
+
+        if (this.soundtrack == null) {              // add it to the sound manager if it isn't yet available
+            this.soundtrack = this.sound.add('soundtrackMenu') as Phaser.Sound.WebAudioSound;
+        }
 
         this.soundtrack.play({
             loop: true,
@@ -235,7 +242,7 @@ export default class HomeScene extends Phaser.Scene {
         // fade in the music
         this.tweens.add({
             targets: this.soundtrack,
-            volume: this.soundtrack.volume,    // TODO: Remove after testing
+            volume: [0, gameOptions.soundtrackVolume],
             duration: gameOptions.fadeInOutTime
         });
 

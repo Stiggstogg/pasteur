@@ -575,7 +575,12 @@ export default class GameScene extends Phaser.Scene {
 
     // start the music
     startMusic() {
-        this.soundtrack = this.sound.add('soundtrackGame') as Phaser.Sound.WebAudioSound;
+
+        this.soundtrack = this.sound.get('soundtrackGame') as Phaser.Sound.WebAudioSound;
+
+        if (this.soundtrack == null) {              // add it to the sound manager if it isn't yet available
+            this.soundtrack = this.sound.add('soundtrackGame') as Phaser.Sound.WebAudioSound;
+        }
 
         this.soundtrack.play({
             loop: true,
@@ -585,7 +590,7 @@ export default class GameScene extends Phaser.Scene {
         // fade in the music
         this.tweens.add({
             targets: this.soundtrack,
-            volume: gameOptions.soundtrackVolume,
+            volume: [0, gameOptions.soundtrackVolume],
             duration: gameOptions.fadeInOutTime
         })
 
