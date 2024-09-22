@@ -6,6 +6,8 @@ import {WinSceneData} from "../helper/types";
 export default class WinScene extends Phaser.Scene {
 
     private winData!: WinSceneData
+    private soundtrack!: Phaser.Sound.WebAudioSound;
+    private fading!: boolean;
 
     // Constructor
     constructor() {
@@ -23,6 +25,13 @@ export default class WinScene extends Phaser.Scene {
 
     // Shows the home screen and waits for the user to select a menu entry
     create(): void {
+
+        // initialize variables
+        this.fading = false;
+
+        // fade in and start the music
+        this.cameras.main.fadeIn(gameOptions.fadeInOutTime);
+        this.soundtrack = this.sound.get('soundtrackGame');         // get the soundtrack
 
         // Texts
         this.add.bitmapText(0.5 * gameOptions.gameWidth, gameOptions.gameHeight * 0.15, 'minogram', 'Congratulations!', 30).setOrigin(0.5);
@@ -48,9 +57,30 @@ export default class WinScene extends Phaser.Scene {
 
         // Click event
         this.input.on('pointerdown', () => {
-            this.scene.start('Home');
+
+            if (!this.fading) {
+                this.fading = true;         // set fading to true
+
+                this.cameras.main.fadeOut(gameOptions.fadeInOutTime);       // fade out the screen
+
+                // fade out the music
+                this.tweens.add({
+                    targets: this.soundtrack,
+                    volume: 0,
+                    duration: gameOptions.fadeInOutTime
+                });
+
+                this.cameras.main.once('camerafadeoutcomplete', () => {     // when the fade out is complete
+                    this.scene.start('Home');                                          // go back to the home scene
+                    this.soundtrack.stop();                                                 // stop the soundtrack
+                });
+
+            }
+
         });
+
     }
+
 
 
 }

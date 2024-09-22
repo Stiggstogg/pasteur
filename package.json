@@ -1,12 +1,14 @@
 {
   "name": "pasteur",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "vite --config vite/config.dev.mjs",
+    "build": "vite build --config vite/config.prod.mjs",
+    "major": "npm version --no-git-tag-version major",
+    "minor": "npm version --no-git-tag-version minor",
+    "patch": "npm version --no-git-tag-version patch"
   },
   "devDependencies": {
     "@types/three": "^0.161.2",

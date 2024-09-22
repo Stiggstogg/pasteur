@@ -35,6 +35,7 @@ export default class GameScene extends Phaser.Scene {
     private keyLeft!: Phaser.Input.Keyboard.Key;            // key Left arrow
     private keyDown!: Phaser.Input.Keyboard.Key;            // key Down arrow
     private keyRight!: Phaser.Input.Keyboard.Key;           // key Right arrow
+    private soundtrack!: Phaser.Sound.WebAudioSound;            // soundtrack of the game
 
     // Constructor
     constructor() {
@@ -45,6 +46,10 @@ export default class GameScene extends Phaser.Scene {
 
     // Creates all objects of this scene
     create(): void {
+
+        // fade in and start the music
+        this.cameras.main.fadeIn(gameOptions.fadeInOutTime);
+        this.startMusic();
 
         // initialize parameters
         this.dragging = false;
@@ -534,7 +539,12 @@ export default class GameScene extends Phaser.Scene {
             const score = this.calculateScore();
 
             // change the scene
-            this.scene.start('Win', {leftBowlEE: this.eeLeft, rightBowlEE: this.eeRight, time: this.formatTime(this.elapsedTime), score: score});
+            this.cameras.main.fadeOut(gameOptions.fadeInOutTime);   // fade out the screen
+
+            this.cameras.main.once('camerafadeoutcomplete', () => {                                 // change the scene when the screen is faded out
+                this.scene.start('Win', {leftBowlEE: this.eeLeft, rightBowlEE: this.eeRight, time: this.formatTime(this.elapsedTime), score: score});
+            });
+
 
         }
 
@@ -560,6 +570,24 @@ export default class GameScene extends Phaser.Scene {
     calculateScore(): number {
 
         return this.averageEE * (gameOptions.parTime / (this.elapsedTime / 1000)) * gameOptions.scoreMultiplier;
+
+    }
+
+    // start the music
+    startMusic() {
+        this.soundtrack = this.sound.add('soundtrackGame') as Phaser.Sound.WebAudioSound;
+
+        this.soundtrack.play({
+            loop: true,
+            volume: 0
+        });
+
+        // fade in the music
+        this.tweens.add({
+            targets: this.soundtrack,
+            volume: gameOptions.soundtrackVolume,
+            duration: gameOptions.fadeInOutTime
+        })
 
     }
 

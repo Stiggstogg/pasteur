@@ -10,15 +10,25 @@ import bowlRightImg from '../assets/images/bowl-right.gif';
 import microscopeImg from '../assets/images/microscope.png';
 import titleImg from '../assets/images/title.gif';
 
-// audio
+// audio: soundtrack
+import soundtrackMenuMp3 from '../assets/audio/soundtrack_menu.mp3';
+import soundtrackMenuOgg from '../assets/audio/soundtrack_menu.ogg';
+import soundtrackGameMp3 from '../assets/audio/soundtrack_game.mp3';
+import soundtrackGameOgg from '../assets/audio/soundtrack_menu.ogg';
+
+// audio: game sound effects
 import crystalToBowlAudio from '../assets/audio/CrystalToBowl.mp3';
-import crystalToBowlJSON from '../assets/audio/CrystalToBowl.json';
+import crystalToBowlJSON from '../assets/audio/CrystalToBowl.json?url';             // ?url is needed to prevent typescript errors, as Phaser needs a string. If this is not added, then the JSON will be imported and not its path
 import crystalFromTableAudio from '../assets/audio/CrystalFromTable.mp3';
-import crystalFromTableJSON from '../assets/audio/CrystalFromTable.json';
+import crystalFromTableJSON from '../assets/audio/CrystalFromTable.json?url';
 import crystalToTableAudio from '../assets/audio/CrystalToTable.mp3';
-import crystalToTableJSON from '../assets/audio/CrystalToTable.json';
+import crystalToTableJSON from '../assets/audio/CrystalToTable.json?url';
 import pasteurVoiceAudio from '../assets/audio/PasteurVoice.mp3';
-import pasteurVoiceJSON from '../assets/audio/PasteurVoice.json';
+import pasteurVoiceJSON from '../assets/audio/PasteurVoice.json?url';
+
+// audio: UI
+import clickOgg from '../assets/audio/select_001.ogg';
+import selectOgg from '../assets/audio/click_003.ogg';
 
 // json
 import simpleShapeJson from '../assets/json/simpleShape.json';
@@ -26,8 +36,7 @@ import crystalDataJson from '../assets/json/crystalData.json';
 
 // fonts
 import minogramPNG from "../assets/fonts/minogram_6x10.png";         // from here: https://frostyfreeze.itch.io/pixel-bitmap-fonts-png-xml (CC0 licensed)
-// @ts-ignore: Suppress this TS error message, as in vite the config (assetsInclude: ['**/*.xml']) is setup in a way that xml files are handled as static assets
-import minogramXML from "../assets/fonts/minogram_6x10.xml";
+import minogramXML from "../assets/fonts/minogram_6x10.xml?url";
 
 // "Loading" scene: Loads all assets and shows a progress bar while loading
 export default class LoadingScene extends Phaser.Scene {
@@ -96,14 +105,16 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.spritesheet('head', headsImg, {frameWidth: 58, frameHeight: 83});
 
         // load audio
-        // @ts-ignore (this is needed here as instead of a string also the object directly can be provided)
         this.load.audioSprite('crystalToBowl', crystalToBowlJSON, crystalToBowlAudio);
-        // @ts-ignore
         this.load.audioSprite('crystalFromTable', crystalFromTableJSON, crystalFromTableAudio);
-        // @ts-ignore
         this.load.audioSprite('crystalToTable', crystalToTableJSON, crystalToTableAudio);
-        // @ts-ignore
         this.load.audioSprite('pasteurVoice', pasteurVoiceJSON, pasteurVoiceAudio);
+
+        this.load.audio('soundtrackMenu', [soundtrackMenuMp3, soundtrackMenuOgg]);
+        this.load.audio('soundtrackGame', [soundtrackGameMp3, soundtrackGameOgg]);
+
+        this.load.audio('select', selectOgg);
+        this.load.audio('click', clickOgg);
 
         // load json
         this.load.json('simpleShape', simpleShapeJson);

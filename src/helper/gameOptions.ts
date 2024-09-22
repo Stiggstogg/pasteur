@@ -31,6 +31,8 @@ class GameOptions {
     public readonly parTime: number;
     public readonly scoreMultiplier: number;
     public readonly keyboardRotationSpeed: number;
+    public readonly fadeInOutTime: number;
+    public readonly soundtrackVolume: number;
 
     constructor() {
 
@@ -41,6 +43,17 @@ class GameOptions {
         // Width and height of the game (canvas)
         this.gameWidth = 425;
         this.gameHeight = 240;
+
+        // ---------------------
+        // Fade in and out times
+        // ---------------------
+        this.fadeInOutTime = 500;      // fade in and out time in milliseconds (for scene transitions)
+
+        // ---------------------
+        // Sound options
+        // ---------------------
+        this.soundtrackVolume = 0.5;    // volume of the soundtrack
+
 
         // ---------------------
         // Text styles
