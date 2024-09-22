@@ -71,8 +71,8 @@ export default class WinScene extends Phaser.Scene {
                 });
 
                 this.cameras.main.once('camerafadeoutcomplete', () => {     // when the fade out is complete
-                    this.scene.start('Home');                                          // go back to the home scene
                     this.soundtrack.stop();                                                 // stop the soundtrack
+                    this.scene.start('Home');                                          // go back to the home scene
                 });
 
             }

@@ -38,3 +38,8 @@ export interface WinSceneData {
     time: string,
     score: number
 }
+
+export interface BitmapTextStyle {
+    size: number,
+    color: number
+}

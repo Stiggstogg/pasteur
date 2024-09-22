@@ -23,7 +23,7 @@ body {
   height: 100%;
 }
 
-/* Optional: Control which canvas is on top, pointer events need to be disabled, as otherwise some pointer events are blöocked for the phaser canvas*/
+/* Optional: Control which canvas is on top, pointer events need to be disabled, as otherwise some pointer events are blocked for the phaser canvas*/
 #threeCanvas {
   z-index: 2;
   pointer-events: none;

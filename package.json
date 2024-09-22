@@ -1,7 +1,7 @@
 {
   "name": "pasteur",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "type": "module",
   "scripts": {
     "dev": "vite --config vite/config.dev.mjs",
@@ -13,6 +13,7 @@
   "devDependencies": {
     "@types/three": "^0.161.2",
     "@types/webfontloader": "^1.6.38",
+    "terser": "^5.33.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.11"
   },

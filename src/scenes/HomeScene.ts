@@ -1,14 +1,15 @@
 import Phaser from 'phaser';
 import gameOptions from "../helper/gameOptions";
+import {BitmapTextStyle} from "../helper/types";
 
 // "Home" scene: Main game menu scene
 export default class HomeScene extends Phaser.Scene {
 
     private menuEntries!: string[];
-    private inactiveStyle!: Phaser.Types.GameObjects.Text.TextStyle;
-    private activeStyle!: Phaser.Types.GameObjects.Text.TextStyle;
+    private inactiveStyle!: BitmapTextStyle;
+    private activeStyle!: BitmapTextStyle;
     private selected!: number;
-    private items!: Phaser.GameObjects.Text[];
+    private items!: Phaser.GameObjects.BitmapText[];
     private fading!: boolean;
     private soundtrack!: Phaser.Sound.WebAudioSound;
 
@@ -30,17 +31,13 @@ export default class HomeScene extends Phaser.Scene {
         ];
 
         this.inactiveStyle = {
-            fontFamily: 'Arial',
-            fontSize: '24px',
-            color: '#000000',
-            fontStyle: '',
+            size: 20,
+            color: 0x000000
         }
 
         this.activeStyle = {
-            fontFamily: 'Arial',
-            fontSize: '32px',
-            color: '#ff0000',
-            fontStyle: 'bold',
+            size: 30,
+            color: 0x990000
         }
 
         // initialize empty parameters
@@ -82,7 +79,7 @@ export default class HomeScene extends Phaser.Scene {
         // create menu items (loop through each item)
         for (let i = 0;i < menuEntries.length; i++) {
 
-            const item = this.add.text(start.x, start.y + i * ySpace, menuEntries[i]).setOrigin(0, 0.5);
+            const item = this.add.bitmapText(start.x, start.y + i * ySpace, 'minogram', menuEntries[i], this.inactiveStyle.size).setOrigin(0, 0.5).setTint(this.inactiveStyle.color);
 
             item.setInteractive();          // set interactive
 
@@ -145,7 +142,7 @@ export default class HomeScene extends Phaser.Scene {
     // Select specific menu entry (when moving with the mouse over it)
     selectSpecific(itemIndex: number): void {
 
-        if (!this.fading) {
+        if (!this.fading && this.selected != itemIndex) {
             this.selected = itemIndex;
 
             // highlight the selected entry
@@ -161,10 +158,10 @@ export default class HomeScene extends Phaser.Scene {
     highlightSelected(): void {
 
         for (let i in this.items) {
-            this.items[i].setStyle(this.inactiveStyle);         // change the style of all entries to the inactive style
+            this.items[i].setFontSize(this.inactiveStyle.size).setTint(this.inactiveStyle.color);         // change the style of all entries to the inactive style
         }
 
-        this.items[this.selected].setStyle(this.activeStyle);   // change the style of the selected entry to the active style
+        this.items[this.selected].setFontSize(this.activeStyle.size).setTint(this.activeStyle.color);   // change the style of the selected entry to the active style
 
     }
 
