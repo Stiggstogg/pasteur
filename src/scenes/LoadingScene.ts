@@ -27,8 +27,8 @@ import pasteurVoiceAudio from '../assets/audio/PasteurVoice.mp3';
 import pasteurVoiceJSON from '../assets/audio/PasteurVoice.json?url';
 
 // audio: UI
-import clickOgg from '../assets/audio/select_001.ogg';
-import selectOgg from '../assets/audio/click_003.ogg';
+import clickMp3 from '../assets/audio/select_001.mp3';
+import selectMp3 from '../assets/audio/click_003.mp3';
 
 // json
 import simpleShapeJson from '../assets/json/simpleShape.json';
@@ -113,8 +113,8 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.audio('soundtrackMenu', [soundtrackMenuMp3, soundtrackMenuOgg]);
         this.load.audio('soundtrackGame', [soundtrackGameMp3, soundtrackGameOgg]);
 
-        this.load.audio('select', selectOgg);
-        this.load.audio('click', clickOgg);
+        this.load.audio('select', selectMp3);
+        this.load.audio('click', clickMp3);
 
         // load json
         this.load.json('simpleShape', simpleShapeJson);
