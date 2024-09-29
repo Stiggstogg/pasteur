@@ -32,8 +32,8 @@ export default class GameScene extends BasicGameScene {
         this.textBox.setPosition(0.05 * gameOptions.gameWidth, 0.05 * gameOptions.gameHeight);
 
         this.add.image(0.6 * gameOptions.gameWidth, 0.5 * gameOptions.gameHeight, 'hand');
-        this.add.image(0.4 * gameOptions.gameWidth, 0.5 * gameOptions.gameHeight, 'hand').setFlip(true, false);
-
+        //this.add.image(0.4 * gameOptions.gameWidth, 0.5 * gameOptions.gameHeight, 'hand').setFlip(true, false);
+        this.add.image(0.4 * gameOptions.gameWidth, 0.5 * gameOptions.gameHeight, 'handBack');
 
     }
 
