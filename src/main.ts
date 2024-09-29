@@ -6,6 +6,7 @@ import Phaser from 'phaser'
 import BootScene from './scenes/BootScene';
 import LoadingScene from './scenes/LoadingScene';
 import HomeScene from './scenes/HomeScene';
+import TutorialScene from './scenes/TutorialScene';
 import GameScene from './scenes/GameScene';
 import WinScene from './scenes/WinScene';
 import gameOptions from "./helper/gameOptions";
@@ -15,7 +16,7 @@ const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.WEBGL,
     width: gameOptions.gameWidth,
     height: gameOptions.gameHeight,
-    scene: [BootScene, LoadingScene, HomeScene, GameScene, WinScene],
+    scene: [BootScene, LoadingScene, HomeScene, GameScene, TutorialScene, WinScene],
     canvas: document.getElementById('phaserCanvas') as HTMLCanvasElement,                             // id of the canvas element
     title: 'Pasteur the Game',                  // Shown in the console
     scale: {

@@ -22,6 +22,7 @@ class GameOptions {
     public readonly crystalTableStart: {x: number, y: number};
     public readonly crystalTableDistance: number;
     public readonly dragSensitivity: number;
+    public readonly numberOfCrystalsTutorial: number;
     public readonly crystalScaling: number;
     public readonly bowlLeftPosition: {x: number, y: number};
     public readonly bowlRightPosition: {x: number, y: number};
@@ -109,6 +110,12 @@ class GameOptions {
         };
         this.crystalTableDistance =  0.13;   // distance between the crystals on the table (relative distance to game width)
         this.dragSensitivity = Math.PI;      // sensitivity which is used to determine the dragging speed, unit rad / game.width (how many radians should the crytal rotate if the mouse is moved from left edge of the canvas to the right edge)
+
+        // ------------------------
+        // Tutorial options
+        // ------------------------
+
+        this.numberOfCrystalsTutorial = 4;   // number of crystals in the tutorial
 
         // ------------------------
         // Face limits

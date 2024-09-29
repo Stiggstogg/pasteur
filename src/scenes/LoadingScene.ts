@@ -9,6 +9,7 @@ import bowlLeftImg from '../assets/images/bowl-left.gif';
 import bowlRightImg from '../assets/images/bowl-right.gif';
 import microscopeImg from '../assets/images/microscope.png';
 import titleImg from '../assets/images/title.gif';
+import handImg from '../assets/images/hand.gif';
 
 // audio: soundtrack
 import soundtrackMenuMp3 from '../assets/audio/soundtrack_menu.mp3';
@@ -47,11 +48,6 @@ export default class LoadingScene extends Phaser.Scene {
         super({
             key: 'Loading'
         });
-
-    }
-
-    // Initialize parameters
-    init(): void {
 
     }
 
@@ -100,6 +96,7 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.image('bowlRight', bowlRightImg);
         this.load.image('microscope', microscopeImg);
         this.load.image('title', titleImg);
+        this.load.image('hand', handImg);
 
         // spritesheets
         this.load.spritesheet('head', headsImg, {frameWidth: 58, frameHeight: 83});
@@ -112,6 +109,7 @@ export default class LoadingScene extends Phaser.Scene {
 
         this.load.audio('soundtrackMenu', [soundtrackMenuMp3, soundtrackMenuOgg]);
         this.load.audio('soundtrackGame', [soundtrackGameMp3, soundtrackGameOgg]);
+        this.load.audio('soundtrackTutorial', [soundtrackGameMp3, soundtrackGameOgg]);          // TODO: Change to tutorial soundtrack as soon as it is available
 
         this.load.audio('select', selectMp3);
         this.load.audio('click', clickMp3);
@@ -127,8 +125,8 @@ export default class LoadingScene extends Phaser.Scene {
 
     // Add the animations and change to "Home" scene, directly after loading
     create() {
-        //this.scene.start('Game');       // TODO: Remove after testing (Skips the menu screen)
-        this.scene.start('Home');
+        this.scene.start('Tutorial');       // TODO: Remove after testing (Skips the menu screen)
+        //this.scene.start('Home');
     }
 
 }
