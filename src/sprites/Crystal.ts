@@ -250,6 +250,24 @@ export default class Crystal {
 
     }
 
+    // hide the crystal
+    public hide() {
+
+        this.mesh.visible = false;
+        this.edgeLines.visible = false;
+        this.clickZone.disableInteractive();        // make the click zone not interactive
+
+    }
+
+    // hide the crystal
+    public show() {
+
+        this.mesh.visible = true;
+        this.edgeLines.visible = true;
+        this.clickZone.setInteractive();            // reactivate the click zone
+
+    }
+
     // dispose the crystal (remove it from the three scene)
     public dispose() {
 

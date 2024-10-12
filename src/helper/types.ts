@@ -43,3 +43,9 @@ export interface BitmapTextStyle {
     size: number,
     color: number
 }
+
+export enum TutorialStates {
+    HANDS_INTRO,
+    HANDS_FLIP,
+    END
+}
