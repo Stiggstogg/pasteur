@@ -28,6 +28,13 @@ export default class TextBox extends GameObjects.Container {
 
     }
 
+    // position the text box (using relative coordinates)
+    positionBox(x: number, y: number) {
+
+        this.setPosition(x * gameOptions.gameWidth, y * gameOptions.gameHeight);
+
+    }
+
     // Show the dialog
     showText(text: string) {
 

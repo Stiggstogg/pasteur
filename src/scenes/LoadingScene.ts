@@ -10,6 +10,7 @@ import bowlRightImg from '../assets/images/bowl-right.gif';
 import microscopeImg from '../assets/images/microscope.png';
 import titleImg from '../assets/images/title.gif';
 import handImg from '../assets/images/hand.gif';
+import thalidomideImg from '../assets/images/thalidomide.png';
 
 // audio: soundtrack
 import soundtrackMenuMp3 from '../assets/audio/soundtrack_menu.mp3';
@@ -96,6 +97,7 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.image('bowlRight', bowlRightImg);
         this.load.image('microscope', microscopeImg);
         this.load.image('title', titleImg);
+        this.load.image('thalidomide', thalidomideImg);
 
         // spritesheets
         this.load.spritesheet('head', headsImg, {frameWidth: 58, frameHeight: 83});

@@ -1,6 +1,6 @@
 import gameOptions from "../helper/gameOptions";
 import Crystal from "../sprites/Crystal";
-import {CrystalLocation, TutorialStates} from "../helper/types";
+import {CrystalEnantiomer, CrystalLocation, TutorialStates} from "../helper/types";
 import BasicGameScene from "./BasicGameScene";
 import TextBox from "../sprites/TextBox";
 import TutorialStateManager from "../helper/TutorialStateManager";
@@ -15,6 +15,8 @@ export default class GameScene extends BasicGameScene {
     private handLeft!: Hand;
     private handRight!: Hand;
     private continue!: Continue;
+    private thalidomide!: Phaser.GameObjects.Image;
+    private tutorialCrystals!: Crystal[];
 
     // Constructor
     constructor() {
@@ -49,10 +51,28 @@ export default class GameScene extends BasicGameScene {
     // Create tutorial objects
     createTutorialObjects() {
 
-        // create the crystals
+        // create the game crystals
         this.createCrystals();
 
-        this.allCrystals.forEach((crystal) => {
+        this.allCrystals.forEach((crystal) => {     // make them invisible
+            crystal.hide();
+        });
+
+        // create two crystals for the tutorial
+        this.tutorialCrystals = [];
+
+        this.tutorialCrystals.push(new Crystal(this.threeScene, this, this.threeCamera, 0.5, 0.5,
+            gameOptions.weightRange.min, CrystalEnantiomer.R, true));
+        this.tutorialCrystals.push(new Crystal(this.threeScene, this, this.threeCamera, 0.5, 0.5,
+            gameOptions.weightRange.min, CrystalEnantiomer.S, true));
+
+        this.tutorialCrystals[0].moveCrystal(-2, -0.4);
+        this.tutorialCrystals[1].moveCrystal(2, -0.4);
+
+        this.tutorialCrystals[0].rotate(-0.8, -0.3);
+        this.tutorialCrystals[1].rotate(-0.8, 0.3);
+
+        this.tutorialCrystals.forEach((crystal) => {
             crystal.hide();
         });
 
@@ -69,8 +89,12 @@ export default class GameScene extends BasicGameScene {
         this.continue = this.add.existing(new Continue(this));
 
         this.continue.on('continue', () => {
+
             this.nextTutorialState();
         });
+
+        // create the thalidomide molecule
+        this.thalidomide = this.add.image(0.5 * gameOptions.gameWidth, 0.53 * gameOptions.gameHeight, 'thalidomide').setVisible(false).setScale(0.07);
 
     }
 
@@ -104,6 +128,26 @@ export default class GameScene extends BasicGameScene {
                 this.setupHandsFlip();
                 this.stateManager.nextState();
                 break;
+            case TutorialStates.HANDS_FLIP:
+                this.cleanupHandsFlip();
+                this.setupResolutionIntro();
+                this.stateManager.nextState();
+                break;
+            case TutorialStates.RESOLUTION_INTRO:
+                this.cleanupResolutionIntro();
+                this.setupResolutionTartrate();
+                this.stateManager.nextState();
+                break;
+            case TutorialStates.RESOLUTION_TARTRATE:
+                this.cleanupResolutionTartrate();
+                this.setupHowto();
+                this.stateManager.nextState();
+                break;
+            case TutorialStates.HOWTO:
+                this.cleanupHowto();
+                //this.setupHowto(); TODO: Add next state
+                this.stateManager.nextState();
+                break;
             default:
                 break;
         }
@@ -117,7 +161,7 @@ export default class GameScene extends BasicGameScene {
             'Chirality describes objects that cannot be superimposed onto their mirror images, ' +
             'like your left and right hands.');
 
-        this.textBox.setPosition(0.05 * gameOptions.gameWidth, 0.05 * gameOptions.gameHeight);
+        this.textBox.positionBox(0.05, 0.05);
 
         // show the hands
         this.handLeft.setVisible(true);
@@ -181,6 +225,98 @@ export default class GameScene extends BasicGameScene {
 
         // turn off the event handler
         this.events.off('flipped');
+
+        // remove the hands
+        this.handRight.setVisible(false);
+        this.handLeft.setVisible(false);
+
+        // hide the continue button
+        this.continue.hideButton();
+
+    }
+
+    setupResolutionIntro() {
+
+        // show the text and the thalodomine molecule
+        this.textBox.showText('In chemistry, molecules that cannot be superimposed on their mirror images are called enantiomers. ' +
+            'In nature, often only one enantiomer is present, and they can behave differently. ' +
+            'For example, one form of thalidomide ("Contergan" / "Softenon") treats morning sickness, while the other caused birth defects.' +
+            '\n\n\n\n\n\n\n' +
+            'Classical chemical processes produce a 50/50 mixture of chiral molecules. Even today, separating enantiomers remains a significant challenge.');
+
+        // show the thalidomide molecule
+        this.thalidomide.setVisible(true);
+
+        // show the continue button
+        this.continue.positionButton(0.80, 0.90);
+        this.continue.showButton();
+
+    }
+
+    cleanupResolutionIntro() {
+
+        // hide the thalidomide molecule
+        this.thalidomide.setVisible(false);
+
+        // hide the continue button
+        this.continue.hideButton();
+
+    }
+
+    setupResolutionTartrate() {
+
+        // show the text about the tartrate and its history
+        this.textBox.showText('In 1848, Louis Pasteur became the first to achieve chiral resolution when he sorted tartrate crystals by hand. ' +
+            'He discovered that some crystals were left-handed while others were right-handed, ' +
+            'providing the first proof of molecular chirality and change the course of science forever.' +
+            '\n\n\n\n\n\n\n\n ');
+
+        // show two big crystals
+        this.tutorialCrystals.forEach((crystal) => {
+            crystal.show();
+            crystal.deactivateClickZone();          // needs to be disabled as show() enables it
+        });
+
+        // show the continue button
+        this.continue.positionButton(0.80, 0.80);
+        this.continue.showButton();
+
+    }
+
+    cleanupResolutionTartrate() {
+
+        // hide the tutorial crystals
+        this.tutorialCrystals.forEach((crystal) => {
+            crystal.hide();
+        });
+
+        // hide the continue button
+        this.continue.hideButton();
+
+    }
+
+    setupHowto() {
+
+        // show the first text
+        this.textBox.showText('Now, it is your turn to recreate Pasteur\'s historic discovery! ' +
+            'In front of you are tartrate crystals in two enantiomeric forms. Pick up the first crystal.');
+
+        this.textBox.positionBox(0.05, 0.25);
+
+        // show the crystals on the table (but activate only one for clicking)
+        this.allCrystals.forEach((crystal) => {
+            crystal.show();
+            crystal.deactivateClickZone();
+        });
+
+        this.allCrystals[0].activateClickZone();
+
+
+
+
+    }
+
+    cleanupHowto() {
 
     }
 

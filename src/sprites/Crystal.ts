@@ -23,7 +23,7 @@ export default class Crystal {
     private readonly lineMaterial: THREE.LineBasicMaterial;              // material of the edge lines
 
     // Constructor
-    constructor(threeScene: THREE.Scene, phaserScene: Phaser.Scene, camera: THREE.PerspectiveCamera, x: number, y: number) {
+    constructor(threeScene: THREE.Scene, phaserScene: Phaser.Scene, camera: THREE.PerspectiveCamera, x: number, y: number, weight?: number, enantiomer?: CrystalEnantiomer, noRotation?: boolean) {
 
         // initialize parameters
         this.x = x;
@@ -33,9 +33,20 @@ export default class Crystal {
         this.threeScene = threeScene;
         this.camera = camera;
 
-        // get the initial values for the crystal (random)
-        this.weight = Phaser.Math.RND.realInRange(gameOptions.weightRange.min, gameOptions.weightRange.max);
-        this.enantiomer = Phaser.Math.RND.pick([CrystalEnantiomer.R, CrystalEnantiomer.S]);
+        // get the initial values for the crystal (random or use the ones provide if available)
+        if (weight) {
+            this.weight = weight;
+        }
+        else {
+            this.weight = Phaser.Math.RND.realInRange(gameOptions.weightRange.min, gameOptions.weightRange.max);
+        }
+
+        if (enantiomer !== undefined && enantiomer !== null) {
+            this.enantiomer = enantiomer;
+        }
+        else {
+            this.enantiomer = Phaser.Math.RND.pick([CrystalEnantiomer.R, CrystalEnantiomer.S]);
+        }
 
         // setup the material for the crystal
         this.material = new THREE.MeshBasicMaterial({
@@ -68,8 +79,11 @@ export default class Crystal {
         this.xAxis = new THREE.Vector3(1, 0, 0);
         this.yAxis = new THREE.Vector3(0, 1, 0);
 
-        // set the random rotation for the crystal
-        this.rotate(Phaser.Math.RND.realInRange(0, Math.PI), Phaser.Math.RND.realInRange(0, Math.PI));
+        // set the rotation for the crystal (random or no rotation)
+        if (!noRotation) {
+            this.rotate(Phaser.Math.RND.realInRange(0, Math.PI), Phaser.Math.RND.realInRange(0, Math.PI));
+        }
+
 
         // place the crystal on the table
         this.location = CrystalLocation.TABLE;
@@ -199,6 +213,14 @@ export default class Crystal {
 
     }
 
+    // Position the crystal in the xy plane (for tutorial!)
+    public moveCrystal(x: number, y: number) {
+
+        this.mesh.position.set(x, y, gameOptions.zCrystalMicroscope);
+        this.edgeLines.position.set(x, y, gameOptions.zCrystalMicroscope);
+
+    }
+
     // Put the crystal on the table
     public putOnTable() {
         this.location = CrystalLocation.TABLE;
@@ -247,6 +269,20 @@ export default class Crystal {
         this.clickZone.on('pointerdown', () => {
             this.clickZone.scene.events.emit(Clicks.CRYSTAL, this);
         });
+
+    }
+
+    // deactivate click zone (for tutorial)
+    public deactivateClickZone() {
+
+        this.clickZone.disableInteractive();
+
+    }
+
+    // activate click zone (for tutorial)
+    public activateClickZone() {
+
+        this.clickZone.setInteractive();
 
     }
 

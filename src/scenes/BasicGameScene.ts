@@ -21,8 +21,8 @@ export default class BasicGameScene extends Phaser.Scene {
     private previousPointerPos!: Phaser.Math.Vector2;       // previous pointer position (from last frame)
     private microscope!: Phaser.GameObjects.Image;
     private threeRenderer!: THREE.WebGLRenderer;
-    private threeScene!: THREE.Scene;
-    private threeCamera!: THREE.PerspectiveCamera;
+    protected threeScene!: THREE.Scene;
+    protected threeCamera!: THREE.PerspectiveCamera;
     protected startTime!: number;                             // start time of the game (when the first crystal was clicked
     protected elapsedTime!: number;                           // elapsed time of the game (time since the first crystal was clicked)
     private elapsedTimeText!: Phaser.GameObjects.BitmapText; // text which shows the elapsed time

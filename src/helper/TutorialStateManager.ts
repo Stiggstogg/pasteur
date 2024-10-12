@@ -4,6 +4,10 @@ export default class TutorialStateManager {
 
     private listOfStates: TutorialStates[] = [
         TutorialStates.HANDS_INTRO,
+        TutorialStates.HANDS_FLIP,
+        TutorialStates.RESOLUTION_INTRO,
+        TutorialStates.RESOLUTION_TARTRATE,
+        TutorialStates.HOWTO,
         TutorialStates.END
     ];
     private currentState: number = 0;

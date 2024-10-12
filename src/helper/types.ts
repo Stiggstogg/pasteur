@@ -47,5 +47,8 @@ export interface BitmapTextStyle {
 export enum TutorialStates {
     HANDS_INTRO,
     HANDS_FLIP,
+    RESOLUTION_INTRO,
+    RESOLUTION_TARTRATE,
+    HOWTO,
     END
 }
