@@ -9,8 +9,8 @@ import {Clicks, CrystalEnantiomer, CrystalLocation} from "../helper/types";
 export default class BasicGameScene extends Phaser.Scene {
 
     private head!: Phaser.GameObjects.Image;
-    private bowlLeft!: Phaser.GameObjects.Image;
-    private bowlRight!: Phaser.GameObjects.Image;
+    protected bowlLeft!: Phaser.GameObjects.Image;
+    protected bowlRight!: Phaser.GameObjects.Image;
     protected eeLeft!: number;                                 // %ee value in the left bowl
     protected eeRight!: number;                                // %ee value in the right bowl
     private averageEE!: number;                             // average %ee value of the two bowls
@@ -19,7 +19,7 @@ export default class BasicGameScene extends Phaser.Scene {
     protected allCrystals!: Crystal[];                        // all crystals in the game
     private dragging!: boolean;                             // is the crystal currently dragged?
     private previousPointerPos!: Phaser.Math.Vector2;       // previous pointer position (from last frame)
-    private microscope!: Phaser.GameObjects.Image;
+    protected microscope!: Phaser.GameObjects.Image;
     private threeRenderer!: THREE.WebGLRenderer;
     protected threeScene!: THREE.Scene;
     protected threeCamera!: THREE.PerspectiveCamera;
@@ -220,10 +220,12 @@ export default class BasicGameScene extends Phaser.Scene {
     }
 
     // Create and add a single crystal
-    createCrystals(numberOfCrystals: number) {
+    createCrystals(numberOfCrystals: number, enantiomerSequence?: CrystalEnantiomer[]) {
 
         let x = gameOptions.crystalTableStart.x;
         let y = gameOptions.crystalTableStart.y;
+
+        let enantiomer: CrystalEnantiomer | undefined = undefined;
 
         for (let i = 0; i < numberOfCrystals; i++) {
 
@@ -236,7 +238,11 @@ export default class BasicGameScene extends Phaser.Scene {
                 y += gameOptions.crystalTableDistance;
             }
 
-            this.allCrystals.push(new Crystal(this.threeScene, this, this.threeCamera, x, y));
+            if (enantiomerSequence !== undefined && enantiomerSequence !== null) {
+                enantiomer = enantiomerSequence[i];
+            }
+
+            this.allCrystals.push(new Crystal(this.threeScene, this, this.threeCamera, x, y, undefined, enantiomer));
         }
 
     }
@@ -304,15 +310,18 @@ export default class BasicGameScene extends Phaser.Scene {
 
         // Bowl clicks
         this.bowlLeft.on('pointerdown', () => {
+            this.events.emit(Clicks.BOWLLEFT);          // emit event (used for tutorial)
             this.putInBowl(CrystalLocation.BOWLLEFT);
         });
 
         this.bowlRight.on('pointerdown', () => {
+            this.events.emit(Clicks.BOWLRIGHT);          // emit event (used for tutorial)
             this.putInBowl(CrystalLocation.BOWLRIGHT);
         });
 
         // Microscope click
         this.microscope.on('pointerdown', () => {
+            this.events.emit(Clicks.MICROSCOPE);
             this.putBackOnTable();
         });
 
@@ -558,6 +567,10 @@ export default class BasicGameScene extends Phaser.Scene {
 
     // Basic cleanup of the scene, before you change to another scene
     cleanupScene() {
+
+        // turn off event listeners
+        this.events.off(Clicks.CRYSTAL);
+        this.events.off('flipped');
 
         // create a dummy cube to hide the crystals (for some strange reason the crystals are still visible after the scene is changed).
         // As soon as all crystals are disposed from the scene and the scene is rendered one last time, the crystals are still visible,

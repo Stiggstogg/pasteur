@@ -7,7 +7,13 @@ export default class TutorialStateManager {
         TutorialStates.HANDS_FLIP,
         TutorialStates.RESOLUTION_INTRO,
         TutorialStates.RESOLUTION_TARTRATE,
-        TutorialStates.HOWTO,
+        TutorialStates.PICKCRYSTAL_ONE,
+        TutorialStates.ROTATECRYSTAL_ONE,
+        TutorialStates.PICKCRYSTAL_TWO,
+        TutorialStates.ROTATECRYSTAL_TWO,
+        TutorialStates.PICKCRYSTAL_THREE,
+        TutorialStates.ROTATECRYSTAL_THREE,
+        TutorialStates.SORTREMAINING,
         TutorialStates.END
     ];
     private currentState: number = 0;

@@ -5,8 +5,8 @@ import * as THREE from 'three';
 // Crystal class
 export default class Crystal {
 
-    private readonly x : number;                                // relative x position of the crystal on the screen
-    private readonly y: number;                                 // relative y position of the crystal on the screen
+    public readonly x : number;                                // relative x position of the crystal on the screen
+    public readonly y: number;                                 // relative y position of the crystal on the screen
     private x3d: number;                                        // x position in the 3D world
     private y3d: number;                                        // y position in the 3D world
     private readonly mesh: THREE.Mesh;                          // mesh (includes the geometry and material)
@@ -291,7 +291,11 @@ export default class Crystal {
 
         this.mesh.visible = false;
         this.edgeLines.visible = false;
-        this.clickZone.disableInteractive();        // make the click zone not interactive
+
+        if (this.clickZone !== undefined) {
+            this.clickZone.disableInteractive();        // make the click zone not interactive if it still exists
+        }
+
 
     }
 
@@ -300,7 +304,10 @@ export default class Crystal {
 
         this.mesh.visible = true;
         this.edgeLines.visible = true;
-        this.clickZone.setInteractive();            // reactivate the click zone
+
+        if (this.clickZone !== undefined) {
+            this.clickZone.setInteractive();       // make the click zone interactive if it still exists
+        }
 
     }
 

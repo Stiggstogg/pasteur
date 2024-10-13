@@ -1,11 +1,12 @@
 import gameOptions from "../helper/gameOptions";
 import Crystal from "../sprites/Crystal";
-import {CrystalEnantiomer, CrystalLocation, TutorialStates} from "../helper/types";
+import {Clicks, CrystalEnantiomer, CrystalLocation, TutorialStates} from "../helper/types";
 import BasicGameScene from "./BasicGameScene";
 import TextBox from "../sprites/TextBox";
 import TutorialStateManager from "../helper/TutorialStateManager";
 import Continue from "../sprites/Continue";
 import Hand from "../sprites/Hand";
+import Arrow from "../sprites/Arrow";
 
 // "Tutorial" scene: Scene for the main game
 export default class GameScene extends BasicGameScene {
@@ -17,6 +18,8 @@ export default class GameScene extends BasicGameScene {
     private continue!: Continue;
     private thalidomide!: Phaser.GameObjects.Image;
     private tutorialCrystals!: Crystal[];
+    private arrowOne!: Arrow;
+    private arrowTwo!: Arrow;
 
     // Constructor
     constructor() {
@@ -96,12 +99,19 @@ export default class GameScene extends BasicGameScene {
         // create the thalidomide molecule
         this.thalidomide = this.add.image(0.5 * gameOptions.gameWidth, 0.53 * gameOptions.gameHeight, 'thalidomide').setVisible(false).setScale(0.07);
 
+        // create the arrows
+        this.arrowOne = this.add.existing(new Arrow(this, 0.5, 0.5));
+        this.arrowTwo = this.add.existing(new Arrow(this, 0.5, 0.5));
+
+        this.arrowOne.hide();
+        this.arrowTwo.hide();
+
     }
 
     // Create the crystals
     createCrystals() {
 
-        super.createCrystals(gameOptions.numberOfCrystalsTutorial);
+        super.createCrystals(gameOptions.numberOfCrystalsTutorial, [CrystalEnantiomer.R, CrystalEnantiomer.S, CrystalEnantiomer.R, CrystalEnantiomer.S]);
 
     }
 
@@ -126,31 +136,51 @@ export default class GameScene extends BasicGameScene {
             case TutorialStates.HANDS_INTRO:
                 this.cleanupHandsIntro();
                 this.setupHandsFlip();
-                this.stateManager.nextState();
                 break;
             case TutorialStates.HANDS_FLIP:
                 this.cleanupHandsFlip();
                 this.setupResolutionIntro();
-                this.stateManager.nextState();
                 break;
             case TutorialStates.RESOLUTION_INTRO:
                 this.cleanupResolutionIntro();
                 this.setupResolutionTartrate();
-                this.stateManager.nextState();
                 break;
             case TutorialStates.RESOLUTION_TARTRATE:
                 this.cleanupResolutionTartrate();
-                this.setupHowto();
-                this.stateManager.nextState();
+                this.setupPickCrystalOne();
                 break;
-            case TutorialStates.HOWTO:
-                this.cleanupHowto();
-                //this.setupHowto(); TODO: Add next state
-                this.stateManager.nextState();
+            case TutorialStates.PICKCRYSTAL_ONE:
+                this.cleanupPickCrystalOne();
+                this.setupRotateCrystalOne();
+                break;
+            case TutorialStates.ROTATECRYSTAL_ONE:
+                this.cleanupRotateCrystalOne();
+                this.setupPickCrystalTwo();
+                break;
+            case TutorialStates.PICKCRYSTAL_TWO:
+                this.cleanupPickCrystalTwo();
+                this.setupRotateCrystalTwo();
+                break;
+            case TutorialStates.ROTATECRYSTAL_TWO:
+                this.cleanupRotateCrystalTwo();
+                this.setupPickCrystalThree();
+                break;
+            case TutorialStates.PICKCRYSTAL_THREE:
+                this.cleanupPickCrystalThree();
+                this.setupRotateCrystalThree();
+                break;
+            case TutorialStates.ROTATECRYSTAL_THREE:
+                this.cleanupRotateCrystalThree();
+                this.setupSortRemaining();
+                break;
+            case TutorialStates.SORTREMAINING:
+
                 break;
             default:
                 break;
         }
+
+        this.stateManager.nextState();
 
     }
 
@@ -295,11 +325,12 @@ export default class GameScene extends BasicGameScene {
 
     }
 
-    setupHowto() {
+    setupPickCrystalOne() {
 
-        // show the first text
+        // show the text
         this.textBox.showText('Now, it is your turn to recreate Pasteur\'s historic discovery! ' +
-            'In front of you are tartrate crystals in two enantiomeric forms. Pick up the first crystal.');
+            'In front of you are tartrate crystals in two enantiomeric forms.\n\n' +
+            'Pick up the first crystal.');
 
         this.textBox.positionBox(0.05, 0.25);
 
@@ -311,13 +342,257 @@ export default class GameScene extends BasicGameScene {
 
         this.allCrystals[0].activateClickZone();
 
+        // show the arrow to indicate the crystal
+        this.arrowOne.show();
+        this.arrowOne.setDirection('right');
+        this.arrowOne.setRelativePosition(this.allCrystals[0].x - 0.07 , this.allCrystals[0].y);
 
+        // go to the next state when the crystal is picked
+        this.events.once(Clicks.CRYSTAL, () => {
+            this.nextTutorialState();
+        });
+
+    }
+
+    cleanupPickCrystalOne() {
+
+        // hide the arrow
+        this.arrowOne.hide();
+
+    }
+
+    setupRotateCrystalOne() {
+
+        // deactivate the bowls, so that the crystal cannot be placed there
+        this.bowlLeft.disableInteractive();
+        this.bowlRight.disableInteractive();
+
+        // show the first text
+        this.textBox.showText('Rotate the crystal to examine its structure. ' +
+            'Use your mouse, touch, or WASD/arrow keys.\n\n' +
+            'Click on the microscope to place it back on the table.');
+
+        this.textBox.positionBox(0.05, 0.6);
+
+        // show the arrow
+        this.arrowOne.show();
+        this.arrowOne.setDirection('right');
+        this.arrowOne.setRelativePosition(
+            (this.microscope.x - this.microscope.width) / gameOptions.gameWidth - 0.04,
+            (this.microscope.y + this.microscope.height / 2)/ gameOptions.gameHeight);
+
+        // go to the next state when the microscope is clicked
+        this.events.once(Clicks.MICROSCOPE, () => {
+            this.nextTutorialState();
+        });
+
+    }
+
+    cleanupRotateCrystalOne() {
+
+        // hide the arrow
+        this.arrowOne.hide();
+
+    }
+
+    setupPickCrystalTwo() {
+
+        // show the text
+        this.textBox.showText('Now, pick up another crystal and examine it.');
+
+        this.textBox.positionBox(0.05, 0.37);
+
+        // activate the second crystal for clicking and deactivate the first one
+        this.allCrystals[0].deactivateClickZone();
+        this.allCrystals[1].activateClickZone();
+
+        // show the arrow to indicate the crystal
+        this.arrowOne.show();
+        this.arrowOne.setDirection('up');
+        this.arrowOne.setRelativePosition(this.allCrystals[1].x, this.allCrystals[1].y + 0.12);
+
+        // go to the next state when the crystal is picked
+        this.events.once(Clicks.CRYSTAL, () => {
+            this.nextTutorialState();
+        });
+
+    }
+
+    cleanupPickCrystalTwo() {
+
+        // hide the arrow
+        this.arrowOne.hide();
+
+    }
+
+    setupRotateCrystalTwo() {
+
+        // activate the bowls, so that the crystal cannot be placed there
+        this.bowlLeft.setInteractive();
+        this.bowlRight.setInteractive();
+
+        // show the first text
+        this.textBox.showText('Examine it and place this crystal in one of the bowls to sort it out.');
+
+        this.textBox.positionBox(0.05, 0.7);
+
+        // show the arrows
+        this.arrowOne.show();
+
+        this.arrowOne.setDirection('left');
+        this.arrowOne.setRelativePosition(
+            (this.bowlLeft.x + this.bowlLeft.width / 2) / gameOptions.gameWidth + 0.04,
+            (this.bowlLeft.y) / gameOptions.gameHeight);
+
+        this.arrowTwo.show();
+
+        this.arrowTwo.setDirection('right');
+        this.arrowTwo.setRelativePosition(
+            (this.bowlRight.x - this.bowlRight.width / 2) / gameOptions.gameWidth - 0.04,
+            (this.bowlRight.y)/ gameOptions.gameHeight);
+
+        // go to the next state when the crystal is placed in a bowl
+        this.events.once(Clicks.BOWLLEFT, () => {
+            this.nextTutorialState();
+        });
+
+        this.events.once(Clicks.BOWLRIGHT, () => {
+            this.nextTutorialState();
+        });
+
+    }
+
+    cleanupRotateCrystalTwo() {
+
+        // hide the arrow
+        this.arrowOne.hide();
+        this.arrowTwo.hide();
+
+        // turn off the event listeners for the bowls
+        this.events.off(Clicks.BOWLLEFT);
+        this.events.off(Clicks.BOWLRIGHT);
+
+    }
+
+    setupPickCrystalThree() {
+
+        // show the text
+        this.textBox.showText('Now, pick up the first crystal again.');
+
+        this.textBox.positionBox(0.05, 0.25);
+
+        // Activate the first crystal for clicking
+        this.allCrystals[0].activateClickZone();
+
+        // show the arrow to indicate the crystal
+        this.arrowOne.show();
+        this.arrowOne.setDirection('right');
+        this.arrowOne.setRelativePosition(this.allCrystals[0].x - 0.07 , this.allCrystals[0].y);
+
+        // go to the next state when the crystal is picked
+        this.events.once(Clicks.CRYSTAL, () => {
+            this.nextTutorialState();
+        });
+
+    }
+
+    cleanupPickCrystalThree() {
+
+        // hide the arrow
+        this.arrowOne.hide();
+
+    }
+
+    setupRotateCrystalThree() {
+
+        // show the first text
+        this.textBox.showText('This crystal is the opposite enantiomer compared to the previous one. Place it in the other bowl.');
+
+        this.textBox.positionBox(0.05, 0.7);
+
+        // show the arrows
+        this.arrowOne.show();
+
+        // check if the crystal needs to be placed in the left bowl or not (check which bowl is empty)
+        const bowlLeft = this.getCrystalInBowl(CrystalLocation.BOWLLEFT)[0] === undefined;
+
+        if (bowlLeft) {                             // next crystal needs to be placed in the left bowl
+
+            // activate the correct bowl
+            this.bowlLeft.setInteractive();         // activate the left bowl
+            this.bowlRight.disableInteractive();    // deactivate the right bowl
+
+            // place the arrow
+            this.arrowOne.setDirection('left');
+            this.arrowOne.setRelativePosition(
+                (this.bowlLeft.x + this.bowlLeft.width / 2) / gameOptions.gameWidth + 0.04,
+                (this.bowlLeft.y) / gameOptions.gameHeight);
+
+        }
+        else {
+
+            // activate the correct bowl
+            this.bowlRight.setInteractive();        // activate the right bowl
+            this.bowlLeft.disableInteractive();     // deactivate the left bowl
+
+            // place the arrow
+            this.arrowOne.setDirection('right');
+            this.arrowOne.setRelativePosition(
+                (this.bowlRight.x - this.bowlRight.width / 2) / gameOptions.gameWidth - 0.04,
+                (this.bowlRight.y)/ gameOptions.gameHeight);
+
+        }
+
+        // go to the next state when the crystal is placed in a bowl
+        this.events.once(Clicks.BOWLLEFT, () => {
+            this.nextTutorialState();
+        });
+
+        this.events.once(Clicks.BOWLRIGHT, () => {
+            this.nextTutorialState();
+        });
+
+    }
+
+    cleanupRotateCrystalThree() {
+
+        // hide the arrow
+        this.arrowOne.hide();
+
+        // turn off the event listeners for the bowls
+        this.events.off(Clicks.BOWLLEFT);
+        this.events.off(Clicks.BOWLRIGHT);
+
+    }
+
+    setupSortRemaining() {
+
+        // show the text
+        this.textBox.showText('Great job! You\'ve correctly separated your first two crystals, and both bowls now have an enantiomeric excess (ee) of 100%.\n\n' +
+            'Continue sorting the rest of the crystals. I will assist you along the way.');
+
+        this.textBox.positionBox(0.05, 0.25);
+
+        // hide the two crystals in the bowls as they would be showing on top of the text box
+        this.allCrystals[0].hide();
+        this.allCrystals[1].hide();
+
+        // Activate the remaining crystals for clicking
+        this.allCrystals[2].activateClickZone();
+        this.allCrystals[3].activateClickZone();
 
 
     }
 
-    cleanupHowto() {
 
+
+
+
+
+    // compares if two crystals are the same enantiomers
+    sameEnantiomer(crystalOne: Crystal, crystalTwo: Crystal) {
+            return crystalOne.enantiomer === crystalTwo.enantiomer;
     }
+
 
 }
