@@ -174,7 +174,6 @@ export default class GameScene extends BasicGameScene {
                 this.setupSortRemaining();
                 break;
             case TutorialStates.SORTREMAINING:
-
                 break;
             default:
                 break;
@@ -568,7 +567,7 @@ export default class GameScene extends BasicGameScene {
     setupSortRemaining() {
 
         // show the text
-        this.textBox.showText('Great job! You\'ve correctly separated your first two crystals, and both bowls now have an enantiomeric excess (ee) of 100%.\n\n' +
+        this.textBox.showText('Great job! You have correctly separated your first two crystals, and both bowls now have an enantiomeric excess (ee) of 100%.\n\n' +
             'Continue sorting the rest of the crystals. I will assist you along the way.');
 
         this.textBox.positionBox(0.05, 0.25);
@@ -581,6 +580,18 @@ export default class GameScene extends BasicGameScene {
         this.allCrystals[2].activateClickZone();
         this.allCrystals[3].activateClickZone();
 
+        this.events.once(Clicks.CRYSTAL, () => {
+
+            // hide the text box and show the crystals below it again
+            this.textBox.hideText();
+            this.allCrystals[0].show();
+            this.allCrystals[1].show();
+
+            // reactivate both bowls
+            this.bowlRight.setInteractive();        // activate the right bowl
+            this.bowlLeft.setInteractive();     // deactivate the left bowl
+
+        });
 
     }
 

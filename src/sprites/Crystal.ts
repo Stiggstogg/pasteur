@@ -236,7 +236,7 @@ export default class Crystal {
         this.location = BowlLocation;
 
         // deactivate the click zone
-        this.clickZone.destroy();
+        this.clickZone.disableInteractive();
 
         let position3d: THREE.Vector3;
 
@@ -292,10 +292,7 @@ export default class Crystal {
         this.mesh.visible = false;
         this.edgeLines.visible = false;
 
-        if (this.clickZone !== undefined) {
-            this.clickZone.disableInteractive();        // make the click zone not interactive if it still exists
-        }
-
+        this.clickZone.disableInteractive();        // make the click zone not interactive if it still exists
 
     }
 
