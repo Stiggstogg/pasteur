@@ -36,7 +36,7 @@ export default class BasicGameScene extends Phaser.Scene {
     private keyDown!: Phaser.Input.Keyboard.Key;            // key Down arrow
     private keyRight!: Phaser.Input.Keyboard.Key;           // key Right arrow
     private readonly soundtrackKey: string;                 // key of the soundtrack
-    private soundtrack!: Phaser.Sound.WebAudioSound;        // soundtrack of the game
+    protected soundtrack!: Phaser.Sound.WebAudioSound;        // soundtrack of the game
 
     // Constructor
     constructor(key: string, musicKey: string) {
@@ -562,6 +562,13 @@ export default class BasicGameScene extends Phaser.Scene {
             volume: [0, gameOptions.soundtrackVolume],
             duration: gameOptions.fadeInOutTime
         })
+
+    }
+
+    // check if all crystals are sorted
+    allCrystalsSorted(): boolean {
+
+        return this.allCrystals.every(crystal => crystal.location === CrystalLocation.BOWLLEFT || crystal.location === CrystalLocation.BOWLRIGHT);
 
     }
 

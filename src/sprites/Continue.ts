@@ -19,7 +19,7 @@ export default class Continue extends GameObjects.Container {
         // create items
         this.frame = new GameObjects.Rectangle(scene, 0, 0, 100, 100, 0xB24E2A).setOrigin(0);
         this.frame.setStrokeStyle(2, 0x000000);
-        this.text = new GameObjects.BitmapText(scene, gameOptions.gameWidth * this.textPosition.x, gameOptions.gameWidth * this.textPosition.y, 'minogram', 'Continue >>', 10).setOrigin(0);
+        this.text = new GameObjects.BitmapText(scene, gameOptions.gameWidth * this.textPosition.x, gameOptions.gameWidth * this.textPosition.y, 'minogram', 'Continue >>', 10).setOrigin(0).setTint(0xE1E2A8);
 
         // adjust the frame size
         this.frame.setSize(this.text.width + 2 * this.textPosition.x * gameOptions.gameWidth, this.text.height + 2 * this.textPosition.y * gameOptions.gameWidth);
@@ -53,6 +53,16 @@ export default class Continue extends GameObjects.Container {
     positionButton(x: number, y: number) {
 
         this.setPosition(x * gameOptions.gameWidth, y * gameOptions.gameHeight);
+
+    }
+
+    // change the text of the button
+    changeText(text: string) {
+
+        this.text.setText(text);
+
+        // adjust the frame size
+        this.frame.setSize(this.text.width + 2 * this.textPosition.x * gameOptions.gameWidth, this.text.height + 2 * this.textPosition.y * gameOptions.gameWidth);
 
     }
 

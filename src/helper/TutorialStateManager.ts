@@ -13,6 +13,7 @@ export default class TutorialStateManager {
         TutorialStates.ROTATECRYSTAL_TWO,
         TutorialStates.PICKCRYSTAL_THREE,
         TutorialStates.ROTATECRYSTAL_THREE,
+        TutorialStates.TWOCRYSTALSSORTED,
         TutorialStates.SORTREMAINING,
         TutorialStates.END
     ];

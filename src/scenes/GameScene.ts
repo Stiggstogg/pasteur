@@ -43,7 +43,9 @@ export default class GameScene extends BasicGameScene {
         super.putInBowl(location);
 
         // check if game is finished
-        this.finishGame();
+        if (super.allCrystalsSorted()) {
+            this.finishGame();
+        }
 
     }
 
@@ -62,24 +64,18 @@ export default class GameScene extends BasicGameScene {
 
     finishGame() {
 
-        // check if game is finished
-        if (this.allCrystals.every(crystal => crystal.location === CrystalLocation.BOWLLEFT || crystal.location === CrystalLocation.BOWLRIGHT)) {
+        // cleanup the scene (Three Scene)
+        this.cleanupScene();
 
-            // cleanup the scene (Three Scene)
-            this.cleanupScene();
+        // calculate the final score
+        const score = this.calculateScore();
 
-            // calculate the final score
-            const score = this.calculateScore();
+        // change the scene
+        this.cameras.main.fadeOut(gameOptions.fadeInOutTime);   // fade out the screen
 
-            // change the scene
-            this.cameras.main.fadeOut(gameOptions.fadeInOutTime);   // fade out the screen
-
-            this.cameras.main.once('camerafadeoutcomplete', () => {                                 // change the scene when the screen is faded out
-                this.scene.start('Win', {leftBowlEE: this.eeLeft, rightBowlEE: this.eeRight, time: this.formatTime(this.elapsedTime), score: score});
-            });
-
-
-        }
+        this.cameras.main.once('camerafadeoutcomplete', () => {                                 // change the scene when the screen is faded out
+            this.scene.start('Win', {leftBowlEE: this.eeLeft, rightBowlEE: this.eeRight, time: this.formatTime(this.elapsedTime), score: score});
+        });
 
     }
 

@@ -26,7 +26,7 @@ export default class HomeScene extends Phaser.Scene {
         // menu entries
         this.menuEntries = [
             'Start',
-            'How to Play',
+            'Tutorial',
             'Credits'
         ];
 
@@ -210,9 +210,23 @@ export default class HomeScene extends Phaser.Scene {
 
                     break;
                 case 1:                 // start the "Howto" scene when the "How To Play" entry is selected (after fading out)
-                    this.cameras.main.once('camerafadeoutcomplete', () => {
-                        console.log("HowTo");
+
+                    // fade out the screen      TODO: Put this before the switch as soon as HowTo and Credits are implemented
+                    this.cameras.main.fadeOut(gameOptions.fadeInOutTime);
+                    this.fading = true;         // set fading to true
+
+                    // fade out the music
+                    this.tweens.add({
+                        targets: this.soundtrack,
+                        volume: 0,
+                        duration: gameOptions.fadeInOutTime
                     });
+
+                    this.cameras.main.once('camerafadeoutcomplete', () => {
+                        this.scene.start('Tutorial');
+                        this.soundtrack.stop();         // stop the soundtrack
+                    });
+
                     break;
                 case 2:                 // start the "Credits" scene when the "How To Play" entry is selected (after fading out)
                     this.cameras.main.once('camerafadeoutcomplete', () => {

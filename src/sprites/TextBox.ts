@@ -53,4 +53,10 @@ export default class TextBox extends GameObjects.Container {
         this.setVisible(false);
     }
 
+    getWidth(): number {
+
+        return this.frame.width;
+
+    }
+
 }

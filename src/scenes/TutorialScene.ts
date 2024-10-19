@@ -118,7 +118,37 @@ export default class GameScene extends BasicGameScene {
     // put crystal in a bowl
     putInBowl(location: CrystalLocation): void {
 
-        super.putInBowl(location);
+        // check if you are in the SORTREMAINING state of the tutorial
+        if (this.stateManager.getCurrentState() === TutorialStates.SORTREMAINING) {
+
+            // if in the SORTREMAINING state check if the crystal is the same enantiomer as the first one in the bowl
+            if (this.sameEnantiomer(super.getOpenCrystal()!, this.getCrystalInBowl(location)[0])) {
+
+                this.textBox.showText('Well done!');
+                this.textBox.positionBox(0.5 - (this.textBox.getWidth() / 2 / gameOptions.gameWidth), 0.25);
+
+                super.putInBowl(location);
+
+                if (super.allCrystalsSorted()) {
+                    this.nextTutorialState();
+                }
+
+            }
+            else {
+
+                this.textBox.showText('No, this bowl contains the other enantiomer. Putting it here will reduce your %ee. Check again and place it in the correct bowl.');
+                this.textBox.positionBox(0.05, 0.25);
+
+                this.cameras.main.shake(200, 0.01);
+
+                super.putBackOnTable();
+
+            }
+
+        }
+        else {
+            super.putInBowl(location);
+        }
 
     }
 
@@ -127,6 +157,11 @@ export default class GameScene extends BasicGameScene {
 
         super.putInMicroscope(crystal);
 
+    }
+
+    // compares if two crystals are the same enantiomers
+    sameEnantiomer(crystalOne: Crystal, crystalTwo: Crystal) {
+        return crystalOne.enantiomer === crystalTwo.enantiomer;
     }
 
     // continue with the next tutorial state
@@ -171,9 +206,15 @@ export default class GameScene extends BasicGameScene {
                 break;
             case TutorialStates.ROTATECRYSTAL_THREE:
                 this.cleanupRotateCrystalThree();
+                this.setupTwoCrystalsSorted();
+                break;
+            case TutorialStates.TWOCRYSTALSSORTED:
+                this.cleanupTwoCrystalsSorted();
                 this.setupSortRemaining();
                 break;
             case TutorialStates.SORTREMAINING:
+                this.cleanupSortRemaining();
+                this.setupEnd();
                 break;
             default:
                 break;
@@ -430,6 +471,9 @@ export default class GameScene extends BasicGameScene {
         this.bowlLeft.setInteractive();
         this.bowlRight.setInteractive();
 
+        // deactive the microscope
+        this.microscope.disableInteractive();
+
         // show the first text
         this.textBox.showText('Examine it and place this crystal in one of the bowls to sort it out.');
 
@@ -471,6 +515,9 @@ export default class GameScene extends BasicGameScene {
         this.events.off(Clicks.BOWLLEFT);
         this.events.off(Clicks.BOWLRIGHT);
 
+        // reactivate the microscope
+        this.microscope.setInteractive();
+
     }
 
     setupPickCrystalThree() {
@@ -508,6 +555,9 @@ export default class GameScene extends BasicGameScene {
         this.textBox.showText('This crystal is the opposite enantiomer compared to the previous one. Place it in the other bowl.');
 
         this.textBox.positionBox(0.05, 0.7);
+
+        // deactivate the microscope
+        this.microscope.disableInteractive();
 
         // show the arrows
         this.arrowOne.show();
@@ -562,9 +612,12 @@ export default class GameScene extends BasicGameScene {
         this.events.off(Clicks.BOWLLEFT);
         this.events.off(Clicks.BOWLRIGHT);
 
+        // reactivate the microscope
+        this.microscope.setInteractive();
+
     }
 
-    setupSortRemaining() {
+    setupTwoCrystalsSorted() {
 
         // show the text
         this.textBox.showText('Great job! You have correctly separated your first two crystals, and both bowls now have an enantiomeric excess (ee) of 100%.\n\n' +
@@ -582,28 +635,81 @@ export default class GameScene extends BasicGameScene {
 
         this.events.once(Clicks.CRYSTAL, () => {
 
-            // hide the text box and show the crystals below it again
-            this.textBox.hideText();
-            this.allCrystals[0].show();
-            this.allCrystals[1].show();
-
-            // reactivate both bowls
-            this.bowlRight.setInteractive();        // activate the right bowl
-            this.bowlLeft.setInteractive();     // deactivate the left bowl
+            this.nextTutorialState();
 
         });
 
     }
 
+    cleanupTwoCrystalsSorted() {
 
+        // hide the text box and show the crystals below it again
+        this.textBox.hideText();
+        this.allCrystals[0].show();
+        this.allCrystals[1].show();
 
+        // reactivate both bowls
+        this.bowlRight.setInteractive();    // activate the right bowl
+        this.bowlLeft.setInteractive();     // deactivate the left bowl
 
-
-
-    // compares if two crystals are the same enantiomers
-    sameEnantiomer(crystalOne: Crystal, crystalTwo: Crystal) {
-            return crystalOne.enantiomer === crystalTwo.enantiomer;
     }
 
+    setupSortRemaining() {
+
+        // hide text box when you click a crystal
+        this.events.on(Clicks.CRYSTAL, () => {
+
+            this.textBox.hideText();
+
+        });
+
+
+    }
+
+    cleanupSortRemaining() {
+
+        this.events.off(Clicks.CRYSTAL);
+
+    }
+
+    setupEnd() {
+
+        // show the text
+        this.textBox.showText('Great! You have sorted all crystals! ' +
+            'Now it is time to start a real game on your own. ' +
+            'Aim to ensure each bowl contains only one enantiomer (100 %ee). ' +
+            'Successfully sort all the crystals to complete the task!\n\n' +
+            'Your score will be based on the accuracy of your separation (%ee) ' +
+            'and the time it takes to complete the task — faster and more precise sorting earns higher points.');
+
+        this.textBox.positionBox(0.05, 0.07);
+
+        // cleanup the three scene (hide all crystals)
+        super.cleanupScene();
+
+        // show the continue button
+        this.continue.changeText('Finish Tutorial >>');
+        this.continue.showButton();
+        this.continue.positionButton(0.7, 0.72);
+
+        // go back to the menu scene when the button is clicked
+        this.continue.once('continue', () => {
+
+            // fade out the sceen
+            this.cameras.main.fadeOut(gameOptions.fadeInOutTime);   // fade out the screen
+
+            // fade out the music
+            this.tweens.add({
+                targets: this.soundtrack,
+                volume: 0,
+                duration: gameOptions.fadeInOutTime
+            });
+
+            this.cameras.main.once('camerafadeoutcomplete', () => {                                 // change the scene when the screen is faded out
+                this.scene.start('Home');
+            });
+        });
+
+    }
 
 }
