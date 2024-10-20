@@ -97,7 +97,7 @@ export default class GameScene extends BasicGameScene {
         });
 
         // create the thalidomide molecule
-        this.thalidomide = this.add.image(0.5 * gameOptions.gameWidth, 0.53 * gameOptions.gameHeight, 'thalidomide').setVisible(false).setScale(0.07);
+        this.thalidomide = this.add.image(0.5 * gameOptions.gameWidth, 0.53 * gameOptions.gameHeight, 'thalidomide').setVisible(false);
 
         // create the arrows
         this.arrowOne = this.add.existing(new Arrow(this, 0.5, 0.5));
@@ -139,7 +139,7 @@ export default class GameScene extends BasicGameScene {
                 this.textBox.showText('No, this bowl contains the other enantiomer. Putting it here will reduce your %ee. Check again and place it in the correct bowl.');
                 this.textBox.positionBox(0.05, 0.25);
 
-                this.cameras.main.shake(200, 0.01);
+                this.cameras.main.shake(gameOptions.shakeDuration, gameOptions.shakeIntensity);
 
                 super.putBackOnTable();
 
@@ -680,7 +680,7 @@ export default class GameScene extends BasicGameScene {
             'Aim to ensure each bowl contains only one enantiomer (100 %ee). ' +
             'Successfully sort all the crystals to complete the task!\n\n' +
             'Your score will be based on the accuracy of your separation (%ee) ' +
-            'and the time it takes to complete the task — faster and more precise sorting earns higher points.');
+            'and the time it takes to complete the task - faster and more precise sorting earns higher points.');
 
         this.textBox.positionBox(0.05, 0.07);
 

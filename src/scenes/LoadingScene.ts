@@ -10,7 +10,7 @@ import bowlRightImg from '../assets/images/bowl-right.gif';
 import microscopeImg from '../assets/images/microscope.png';
 import titleImg from '../assets/images/title.gif';
 import handImg from '../assets/images/hand.gif';
-import thalidomideImg from '../assets/images/thalidomide.png';
+import thalidomideImg from '../assets/images/thalidomide.gif';
 import arrowImg from '../assets/images/arrow.png';
 
 // audio: soundtrack

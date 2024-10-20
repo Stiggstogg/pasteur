@@ -442,6 +442,12 @@ export default class BasicGameScene extends Phaser.Scene {
             openCrystal.putInBowl(location);        // put the crystal in the bowl
             this.calculateEEInBowls();              // calculate the %ee values in the bowls and the average %ee value
 
+            // shake the camera in case the average EE got lower
+            // --------------------------------------------------
+            if (this.averageEE < previousAverageEE) {
+                this.cameras.main.shake(gameOptions.shakeDuration, gameOptions.shakeIntensity);
+            }
+
             // change the head based on the average ee and play a sound if the head is changed
             // --------------------------------------------------------------------------------
 

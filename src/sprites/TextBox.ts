@@ -20,7 +20,7 @@ export default class TextBox extends GameObjects.Container {
         // create items
         this.frame = new GameObjects.Rectangle(scene, 0, 0, 100, 100, 0xB24E2A).setOrigin(0);
         this.frame.setStrokeStyle(2, 0x000000);
-        this.text = new GameObjects.BitmapText(scene, gameOptions.gameWidth * this.textPosition.x, gameOptions.gameWidth * this.textPosition.y, 'minogram', 'Text', 10).setOrigin(0).setTint(0xE1E2A8);
+        this.text = new GameObjects.BitmapText(scene, gameOptions.gameWidth * this.textPosition.x, gameOptions.gameWidth * this.textPosition.y, 'minogram', 'Text', 10).setOrigin(0).setTint(gameOptions.textColorTutorial);
         this.text.setMaxWidth(gameOptions.gameWidth * this.maxWidth);
 
         // add children

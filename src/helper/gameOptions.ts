@@ -7,7 +7,7 @@ class GameOptions {
 
     public readonly gameWidth: number;
     public readonly gameHeight: number;
-    public readonly textStyles: Phaser.Types.GameObjects.Text.TextStyle[];
+    public readonly textColorTutorial: number;
     public readonly weightRange: MinMax;
     public readonly lineWidth: number;
     public readonly lineColor: number;
@@ -34,6 +34,8 @@ class GameOptions {
     public readonly keyboardRotationSpeed: number;
     public readonly fadeInOutTime: number;
     public readonly soundtrackVolume: number;
+    public readonly shakeDuration: number;
+    public readonly shakeIntensity: number;
 
     constructor() {
 
@@ -60,15 +62,7 @@ class GameOptions {
         // Text styles
         // ---------------------
 
-        this.textStyles = [];
-
-        // Text style 0: Title
-        this.textStyles.push({
-            fontFamily: 'Orbitron',
-            fontSize: '100px',
-            color: '#FFE500',
-            fontStyle: 'bold'
-        });
+        this.textColorTutorial = 0xE1E2A8;   // color of the tutorial text
 
         // ------------------------
         // Bowls
@@ -116,6 +110,13 @@ class GameOptions {
         // ------------------------
 
         this.numberOfCrystalsTutorial = 4;   // number of crystals in the tutorial
+
+        // ------------------------
+        // Animation options
+        // ------------------------
+
+        this.shakeDuration = 200;           // duration of the shake animation in milliseconds
+        this.shakeIntensity = 0.01;         // intensity of the shake animation
 
         // ------------------------
         // Face limits
