@@ -1,6 +1,6 @@
 {
   "resources": [
-    "./assets/audio/CrystalToTable.mp3"
+    "./assets/audio/PasteurVoice.mp3"
   ],
   "spritemap": {
     "sad": {

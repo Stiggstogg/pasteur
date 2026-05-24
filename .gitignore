@@ -11,7 +11,6 @@ node_modules
 dist
 dist-ssr
 *.local
-Builds
 
 # Editor directories and files
 .vscode/*
@@ -24,5 +23,18 @@ Builds
 *.sln
 *.sw?
 
-# Folder for any other resources (e.g. helper files or raw audio files)
-/Resources/
+# My folder where I store my Builds
+Builds
+
+# My folder for any other resources (e.g. helper files or raw audio files)
+Resources
+
+# Do not upload any environment variables
+*.env
+
+# Do not upload the AI assistent files
+.aiassistant
+
+# Do not upload any aseprite files
+*.ase
+*.aseprite

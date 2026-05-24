@@ -1,3 +1,4 @@
+import { GameObjects, Scene , Math as MathPhsr} from 'phaser';
 import gameOptions from '../helper/gameOptions';
 import {Clicks, CrystalData, CrystalDataTriangulated, CrystalEnantiomer, CrystalLocation} from "../helper/types";
 import * as THREE from 'three';
@@ -7,8 +8,8 @@ export default class Crystal {
 
     public readonly x : number;                                // relative x position of the crystal on the screen
     public readonly y: number;                                 // relative y position of the crystal on the screen
-    private x3d: number;                                        // x position in the 3D world
-    private y3d: number;                                        // y position in the 3D world
+    readonly x3d: number;                                        // x position in the 3D world
+    readonly y3d: number;                                        // y position in the 3D world
     private readonly mesh: THREE.Mesh;                          // mesh (includes the geometry and material)
     private readonly edgeLines: THREE.LineSegments;             // lines on the edges of the crystal
     public readonly weight: number;                            // weight of the crystal (and basically also size)
@@ -18,12 +19,12 @@ export default class Crystal {
     private readonly yAxis: THREE.Vector3;                      // y-axis to rotate the crystal around
     private threeScene: THREE.Scene;                            // the three scene
     private readonly camera: THREE.PerspectiveCamera;           // the camera of the scene
-    private clickZone!: Phaser.GameObjects.Zone;                // click zone for the crystal
+    private clickZone!: GameObjects.Zone;                // click zone for the crystal
     private readonly material: THREE.MeshBasicMaterial;                  // material of the crystal
     private readonly lineMaterial: THREE.LineBasicMaterial;              // material of the edge lines
 
     // Constructor
-    constructor(threeScene: THREE.Scene, phaserScene: Phaser.Scene, camera: THREE.PerspectiveCamera, x: number, y: number, weight?: number, enantiomer?: CrystalEnantiomer, noRotation?: boolean) {
+    constructor(threeScene: THREE.Scene, phaserScene: Scene, camera: THREE.PerspectiveCamera, x: number, y: number, weight?: number, enantiomer?: CrystalEnantiomer, noRotation?: boolean) {
 
         // initialize parameters
         this.x = x;
@@ -38,14 +39,14 @@ export default class Crystal {
             this.weight = weight;
         }
         else {
-            this.weight = Phaser.Math.RND.realInRange(gameOptions.weightRange.min, gameOptions.weightRange.max);
+            this.weight = MathPhsr.RND.realInRange(gameOptions.weightRange.min, gameOptions.weightRange.max);
         }
 
         if (enantiomer !== undefined && enantiomer !== null) {
             this.enantiomer = enantiomer;
         }
         else {
-            this.enantiomer = Phaser.Math.RND.pick([CrystalEnantiomer.R, CrystalEnantiomer.S]);
+            this.enantiomer = MathPhsr.RND.pick([CrystalEnantiomer.R, CrystalEnantiomer.S]);
         }
 
         // setup the material for the crystal
@@ -81,7 +82,7 @@ export default class Crystal {
 
         // set the rotation for the crystal (random or no rotation)
         if (!noRotation) {
-            this.rotate(Phaser.Math.RND.realInRange(0, Math.PI), Phaser.Math.RND.realInRange(0, Math.PI));
+            this.rotate(MathPhsr.RND.realInRange(0, Math.PI), MathPhsr.RND.realInRange(0, Math.PI));
         }
 
 
@@ -241,8 +242,8 @@ export default class Crystal {
         let position3d: THREE.Vector3;
 
         // calculate the spread of the crystal in the bowl (random distance from the bowl center)
-        const spreadX = Phaser.Math.RND.realInRange(-gameOptions.bowlCrystalSpread, gameOptions.bowlCrystalSpread);
-        const spreadY = Phaser.Math.RND.realInRange(-gameOptions.bowlCrystalSpread, gameOptions.bowlCrystalSpread);
+        const spreadX = MathPhsr.RND.realInRange(-gameOptions.bowlCrystalSpread, gameOptions.bowlCrystalSpread);
+        const spreadY = MathPhsr.RND.realInRange(-gameOptions.bowlCrystalSpread, gameOptions.bowlCrystalSpread);
 
         // move the crystal to the bowl
         if (BowlLocation === CrystalLocation.BOWLLEFT) {        // calculate the 3D position of the crystal in the bowl
@@ -259,10 +260,10 @@ export default class Crystal {
     }
 
     // create the click zone for the crystal
-    private createClickZone(phaserScene: Phaser.Scene) {
+    private createClickZone(phaserScene: Scene) {
 
-        this.clickZone = phaserScene.add.zone(this.x * gameOptions.gameWidth, this.y * gameOptions.gameHeight,
-            gameOptions.crystalClickAreaSize * gameOptions.gameWidth, gameOptions.crystalClickAreaSize * gameOptions.gameWidth)
+        this.clickZone = phaserScene.add.zone(this.x * phaserScene.scale.width, this.y * phaserScene.scale.height,
+            gameOptions.crystalClickAreaSize * phaserScene.scale.width, gameOptions.crystalClickAreaSize * phaserScene.scale.height)
             .setOrigin(0.5).setInteractive();
 
         // emit the click event (on the scene) when the click zone is clicked

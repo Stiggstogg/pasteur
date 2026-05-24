@@ -5,8 +5,6 @@ import {MinMax} from "./types";
 
 class GameOptions {
 
-    public readonly gameWidth: number;
-    public readonly gameHeight: number;
     public readonly textColorTutorial: number;
     public readonly weightRange: MinMax;
     public readonly lineWidth: number;
@@ -38,14 +36,6 @@ class GameOptions {
     public readonly shakeIntensity: number;
 
     constructor() {
-
-        // ---------------------
-        // Game and world area
-        // ---------------------
-
-        // Width and height of the game (canvas)
-        this.gameWidth = 425;
-        this.gameHeight = 240;
 
         // ---------------------
         // Fade in and out times

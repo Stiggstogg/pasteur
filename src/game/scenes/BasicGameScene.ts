@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import { Scene, GameObjects, Input, Sound, Math as MathPhsr } from 'phaser';
 import * as THREE from 'three';
 
 import gameOptions from "../helper/gameOptions";
@@ -6,37 +6,37 @@ import Crystal from "../sprites/Crystal";
 import {Clicks, CrystalEnantiomer, CrystalLocation} from "../helper/types";
 
 // Basic game scene which contains all the basic elements used for the main game scene and the tutorial scene
-export default class BasicGameScene extends Phaser.Scene {
+export default class BasicGameScene extends Scene {
 
-    private head!: Phaser.GameObjects.Image;
-    protected bowlLeft!: Phaser.GameObjects.Image;
-    protected bowlRight!: Phaser.GameObjects.Image;
+    private head!: GameObjects.Image;
+    protected bowlLeft!: GameObjects.Image;
+    protected bowlRight!: GameObjects.Image;
     protected eeLeft!: number;                                 // %ee value in the left bowl
     protected eeRight!: number;                                // %ee value in the right bowl
     private averageEE!: number;                             // average %ee value of the two bowls
-    private eeLeftText!: Phaser.GameObjects.BitmapText;     // text which shows the ee value in the left bowl
-    private eeRightText!: Phaser.GameObjects.BitmapText;    // text which shows the ee value in the right bowl
+    private eeLeftText!: GameObjects.BitmapText;     // text which shows the ee value in the left bowl
+    private eeRightText!: GameObjects.BitmapText;    // text which shows the ee value in the right bowl
     protected allCrystals!: Crystal[];                        // all crystals in the game
     private dragging!: boolean;                             // is the crystal currently dragged?
-    private previousPointerPos!: Phaser.Math.Vector2;       // previous pointer position (from last frame)
-    protected microscope!: Phaser.GameObjects.Image;
+    private previousPointerPos!: MathPhsr.Vector2;       // previous pointer position (from last frame)
+    protected microscope!: GameObjects.Image;
     private threeRenderer!: THREE.WebGLRenderer;
     protected threeScene!: THREE.Scene;
     protected threeCamera!: THREE.PerspectiveCamera;
     protected startTime!: number;                             // start time of the game (when the first crystal was clicked
     protected elapsedTime!: number;                           // elapsed time of the game (time since the first crystal was clicked)
-    private elapsedTimeText!: Phaser.GameObjects.BitmapText; // text which shows the elapsed time
+    private elapsedTimeText!: GameObjects.BitmapText; // text which shows the elapsed time
     protected timerRunning!: boolean;                         // is the timer running?
-    private keyW!: Phaser.Input.Keyboard.Key;               // key W
-    private keyA!: Phaser.Input.Keyboard.Key;               // key A
-    private keyS!: Phaser.Input.Keyboard.Key;               // key S
-    private keyD!: Phaser.Input.Keyboard.Key;               // key D
-    private keyUp!: Phaser.Input.Keyboard.Key;              // key Up arrow
-    private keyLeft!: Phaser.Input.Keyboard.Key;            // key Left arrow
-    private keyDown!: Phaser.Input.Keyboard.Key;            // key Down arrow
-    private keyRight!: Phaser.Input.Keyboard.Key;           // key Right arrow
+    private keyW!: Input.Keyboard.Key;               // key W
+    private keyA!: Input.Keyboard.Key;               // key A
+    private keyS!: Input.Keyboard.Key;               // key S
+    private keyD!: Input.Keyboard.Key;               // key D
+    private keyUp!: Input.Keyboard.Key;              // key Up arrow
+    private keyLeft!: Input.Keyboard.Key;            // key Left arrow
+    private keyDown!: Input.Keyboard.Key;            // key Down arrow
+    private keyRight!: Input.Keyboard.Key;           // key Right arrow
     private readonly soundtrackKey: string;                 // key of the soundtrack
-    protected soundtrack!: Phaser.Sound.WebAudioSound;        // soundtrack of the game
+    protected soundtrack!: Sound.WebAudioSound;        // soundtrack of the game
 
     // Constructor
     constructor(key: string, musicKey: string) {
@@ -57,7 +57,7 @@ export default class BasicGameScene extends Phaser.Scene {
 
         // initialize parameters
         this.dragging = false;
-        this.previousPointerPos = new Phaser.Math.Vector2();
+        this.previousPointerPos = new MathPhsr.Vector2();
         this.eeLeft = 0;
         this.eeRight = 0;
         this.averageEE = 0;
@@ -98,10 +98,10 @@ export default class BasicGameScene extends Phaser.Scene {
 
 
                 // rotate the crystal
-                const currentPointerPos = new Phaser.Math.Vector2(this.input.activePointer.position.x, this.input.activePointer.position.y);
+                const currentPointerPos = new MathPhsr.Vector2(this.input.activePointer.position.x, this.input.activePointer.position.y);
 
                 // rotate the crystal based on the difference between the previous pointer position and the current pointer position
-                crystal.rotate((currentPointerPos.y - this.previousPointerPos.y) / gameOptions.gameWidth * gameOptions.dragSensitivity, (currentPointerPos.x - this.previousPointerPos.x) / gameOptions.gameWidth * gameOptions.dragSensitivity);
+                crystal.rotate((currentPointerPos.y - this.previousPointerPos.y) / this.scale.width * gameOptions.dragSensitivity, (currentPointerPos.x - this.previousPointerPos.x) / this.scale.width * gameOptions.dragSensitivity);
 
                 // save the current pointer position as previous pointer position (for next frame)
                 this.previousPointerPos = currentPointerPos;
@@ -142,14 +142,14 @@ export default class BasicGameScene extends Phaser.Scene {
         // scene setup (background, table, etc,...)
         this.add.image(0, 0, 'floor').setOrigin(0);
         this.add.image(0, 0, 'table').setOrigin(0);
-        this.add.rectangle(0, gameOptions.gameHeight, gameOptions.gameWidth, 0.2 * gameOptions.gameHeight, 0x333399).setOrigin(0, 1);
-        this.head = this.add.image(gameOptions.gameWidth * 0.5, gameOptions.gameHeight * 0.82, 'head', 0);
+        this.add.rectangle(0, this.scale.height, this.scale.width, 0.2 * this.scale.height, 0x333399).setOrigin(0, 1);
+        this.head = this.add.image(this.scale.width * 0.5, this.scale.height * 0.82, 'head', 0);
 
-        this.bowlLeft = this.add.sprite(gameOptions.gameWidth * gameOptions.bowlLeftPosition.x, gameOptions.gameHeight * gameOptions.bowlLeftPosition.y, 'bowlLeft').setInteractive();
-        this.bowlRight = this.add.sprite(gameOptions.gameWidth * gameOptions.bowlRightPosition.x, gameOptions.gameHeight * gameOptions.bowlRightPosition.y, 'bowlRight').setInteractive();
+        this.bowlLeft = this.add.sprite(this.scale.width * gameOptions.bowlLeftPosition.x, this.scale.height * gameOptions.bowlLeftPosition.y, 'bowlLeft').setInteractive();
+        this.bowlRight = this.add.sprite(this.scale.width * gameOptions.bowlRightPosition.x, this.scale.height * gameOptions.bowlRightPosition.y, 'bowlRight').setInteractive();
 
         const microscopeSpace = 0.03;
-        this.microscope = this.add.sprite(gameOptions.gameWidth * (1 - microscopeSpace), gameOptions.gameWidth * microscopeSpace, 'microscope').setOrigin(1, 0).setInteractive();
+        this.microscope = this.add.sprite(this.scale.width * (1 - microscopeSpace), this.scale.width * microscopeSpace, 'microscope').setOrigin(1, 0).setInteractive();
         this.microscope.setVisible(false);          // make microscope invisible
 
     }
@@ -159,19 +159,19 @@ export default class BasicGameScene extends Phaser.Scene {
 
         // %ee descriptions for bowls
         const eeHeight = 0.86;
-        this.add.bitmapText(this.bowlLeft.x, gameOptions.gameHeight * eeHeight, 'minogram', '%ee', 20).setOrigin(0.5);
-        this.add.bitmapText(this.bowlRight.x, gameOptions.gameHeight * eeHeight, 'minogram', '%ee', 20).setOrigin(0.5);
+        this.add.bitmapText(this.bowlLeft.x, this.scale.height * eeHeight, 'minogram', '%ee', 20).setOrigin(0.5);
+        this.add.bitmapText(this.bowlRight.x, this.scale.height * eeHeight, 'minogram', '%ee', 20).setOrigin(0.5);
 
         // %ee values for bowls
         const valueHeight = eeHeight + 0.09;
-        this.eeLeftText = this.add.bitmapText(this.bowlLeft.x, gameOptions.gameHeight * valueHeight, 'minogram', '-', 20).setOrigin(0.5);
-        this.eeRightText = this.add.bitmapText(this.bowlRight.x, gameOptions.gameHeight * valueHeight, 'minogram', '-', 20).setOrigin(0.5);
+        this.eeLeftText = this.add.bitmapText(this.bowlLeft.x, this.scale.height * valueHeight, 'minogram', '-', 20).setOrigin(0.5);
+        this.eeRightText = this.add.bitmapText(this.bowlRight.x, this.scale.height * valueHeight, 'minogram', '-', 20).setOrigin(0.5);
 
         // time text
         const distanceMid = 0.08;
         const timeY = (eeHeight + valueHeight) / 2;
-        this.add.bitmapText(gameOptions.gameWidth * (0.5 - distanceMid), gameOptions.gameHeight * timeY, 'minogram', 'TIME', 20).setOrigin(1, 0.5);
-        this.elapsedTimeText = this.add.bitmapText(gameOptions.gameWidth * (0.5 + distanceMid), gameOptions.gameHeight * timeY, 'minogram', '00:00', 20).setOrigin(0, 0.5);
+        this.add.bitmapText(this.scale.width * (0.5 - distanceMid), this.scale.height * timeY, 'minogram', 'TIME', 20).setOrigin(1, 0.5);
+        this.elapsedTimeText = this.add.bitmapText(this.scale.width * (0.5 + distanceMid), this.scale.height * timeY, 'minogram', '00:00', 20).setOrigin(0, 0.5);
 
     }
 
@@ -205,13 +205,12 @@ export default class BasicGameScene extends Phaser.Scene {
         this.threeRenderer.autoClear = false;             // if this is true, the three.js renderer will clear everything (all things rendered by Phaser) before it renders the three.js objects
 
         // add a camera
-        this.threeCamera = new THREE.PerspectiveCamera(45, gameOptions.gameWidth / gameOptions.gameHeight, 1, 100);
+        this.threeCamera = new THREE.PerspectiveCamera(45, this.scale.width / this.scale.height, 1, 100);
         this.threeCamera.position.set(0, 0, 10);
 
         //create an external game object, add it to the Phaser scene and ensure it is rendered together with the other objects in the game loop
         const view = this.add.extern();
 
-        // @ts-expect-error
         view.render = () => {
             this.threeRenderer.state.reset();
             this.threeRenderer.render(this.threeScene, this.threeCamera);
@@ -266,20 +265,20 @@ export default class BasicGameScene extends Phaser.Scene {
     addKeys() {
 
         // add keys (to rotate the crystals)
-        this.keyW = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-        this.keyA = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        this.keyS = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-        this.keyD = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.keyW = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.W);
+        this.keyA = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.A);
+        this.keyS = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.S);
+        this.keyD = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.D);
 
-        this.keyUp = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-        this.keyLeft = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        this.keyDown = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-        this.keyRight = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        this.keyUp = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.UP);
+        this.keyLeft = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.LEFT);
+        this.keyDown = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.DOWN);
+        this.keyRight = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.RIGHT);
 
         // add keys to pickup and put down crystals
-        const keySpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);         // take next crystal and drop it again
-        const keyG = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.G);                 // key to put the crystal in the left bowl
-        const keyH = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.H);                 // key to put the crystal in the right bowl
+        const keySpace = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.SPACE);         // take next crystal and drop it again
+        const keyG = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.G);                 // key to put the crystal in the left bowl
+        const keyH = this.input.keyboard!.addKey(Input.Keyboard.KeyCodes.H);                 // key to put the crystal in the right bowl
 
         keySpace.on('down', () => {
             const crystal = this.getOpenCrystal();
@@ -331,7 +330,7 @@ export default class BasicGameScene extends Phaser.Scene {
         });
 
         // Dragging of the crystal
-        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+        this.input.on('pointerdown', (pointer: Input.Pointer) => {
 
             if (this.getOpenCrystal()) {
                 this.dragging = true;                               // start dragging
@@ -490,7 +489,7 @@ export default class BasicGameScene extends Phaser.Scene {
                 pan = 0.7;
             }
 
-            this.sound.playAudioSprite('crystalToBowl', Phaser.Math.RND.pick(['0', '1', '2']), {pan: pan});     // play the sound
+            this.sound.playAudioSprite('crystalToBowl', MathPhsr.RND.pick(['0', '1', '2']), {pan: pan});     // play the sound
 
         }
 
@@ -509,7 +508,7 @@ export default class BasicGameScene extends Phaser.Scene {
 
         this.microscope.setVisible(false);        // make microscope invisible
 
-        this.sound.playAudioSprite('crystalToTable', Phaser.Math.RND.pick(['0', '1', '2']));     // play the sound
+        this.sound.playAudioSprite('crystalToTable', MathPhsr.RND.pick(['0', '1', '2']));     // play the sound
 
     }
 
@@ -520,7 +519,7 @@ export default class BasicGameScene extends Phaser.Scene {
             crystal.putInMicroscope();
             this.microscope.setVisible(true);        // make microscope visible
 
-            this.sound.playAudioSprite('crystalFromTable', Phaser.Math.RND.pick(['0', '1', '2']));     // play the sound
+            this.sound.playAudioSprite('crystalFromTable', MathPhsr.RND.pick(['0', '1', '2']));     // play the sound
         }
 
     }
@@ -551,10 +550,10 @@ export default class BasicGameScene extends Phaser.Scene {
     // start the music
     startMusic() {
 
-        this.soundtrack = this.sound.get(this.soundtrackKey) as Phaser.Sound.WebAudioSound;
+        this.soundtrack = this.sound.get(this.soundtrackKey) as Sound.WebAudioSound;
 
         if (this.soundtrack == null) {              // add it to the sound manager if it isn't yet available
-            this.soundtrack = this.sound.add(this.soundtrackKey) as Phaser.Sound.WebAudioSound;
+            this.soundtrack = this.sound.add(this.soundtrackKey) as Sound.WebAudioSound;
         }
 
         this.soundtrack.play({

@@ -1,9 +1,8 @@
-import { GameObjects } from 'phaser';
-import gameOptions from "../helper/gameOptions";
+import { GameObjects, Scene } from 'phaser';
 
 export default class Arrow extends GameObjects.Sprite {
 
-    constructor(scene: Phaser.Scene, x: number, y: number) {
+    constructor(scene: Scene, x: number, y: number) {
 
         super(scene, x, y, 'arrow');
 
@@ -12,7 +11,7 @@ export default class Arrow extends GameObjects.Sprite {
     // position the arrow (using relative coordinates)
     setRelativePosition(x: number, y: number) {
 
-        this.setPosition(x * gameOptions.gameWidth, y * gameOptions.gameHeight);
+        this.setPosition(x * this.scene.scale.width, y * this.scene.scale.height);
 
     }
 

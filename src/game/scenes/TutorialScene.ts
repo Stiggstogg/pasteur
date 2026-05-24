@@ -1,3 +1,4 @@
+import { GameObjects } from 'phaser';
 import gameOptions from "../helper/gameOptions";
 import Crystal from "../sprites/Crystal";
 import {Clicks, CrystalEnantiomer, CrystalLocation, TutorialStates} from "../helper/types";
@@ -16,7 +17,7 @@ export default class GameScene extends BasicGameScene {
     private handLeft!: Hand;
     private handRight!: Hand;
     private continue!: Continue;
-    private thalidomide!: Phaser.GameObjects.Image;
+    private thalidomide!: GameObjects.Image;
     private tutorialCrystals!: Crystal[];
     private arrowOne!: Arrow;
     private arrowTwo!: Arrow;
@@ -83,8 +84,8 @@ export default class GameScene extends BasicGameScene {
         this.textBox = this.add.existing(new TextBox(this));
 
         // create the hands
-        this.handLeft = this.add.existing(new Hand(this, 0.4 * gameOptions.gameWidth, 0.5 * gameOptions.gameHeight, false));
-        this.handRight = this.add.existing(new Hand(this, 0.6 * gameOptions.gameWidth, 0.5 * gameOptions.gameHeight, true));
+        this.handLeft = this.add.existing(new Hand(this, 0.4 * this.scale.width, 0.5 * this.scale.height, false));
+        this.handRight = this.add.existing(new Hand(this, 0.6 * this.scale.width, 0.5 * this.scale.height, true));
         this.handLeft.setVisible(false);
         this.handRight.setVisible(false);
 
@@ -97,7 +98,7 @@ export default class GameScene extends BasicGameScene {
         });
 
         // create the thalidomide molecule
-        this.thalidomide = this.add.image(0.5 * gameOptions.gameWidth, 0.53 * gameOptions.gameHeight, 'thalidomide').setVisible(false);
+        this.thalidomide = this.add.image(0.5 * this.scale.width, 0.53 * this.scale.height, 'thalidomide').setVisible(false);
 
         // create the arrows
         this.arrowOne = this.add.existing(new Arrow(this, 0.5, 0.5));
@@ -125,7 +126,7 @@ export default class GameScene extends BasicGameScene {
             if (this.sameEnantiomer(super.getOpenCrystal()!, this.getCrystalInBowl(location)[0])) {
 
                 this.textBox.showText('Well done!');
-                this.textBox.positionBox(0.5 - (this.textBox.getWidth() / 2 / gameOptions.gameWidth), 0.25);
+                this.textBox.positionBox(0.5 - (this.textBox.getWidth() / 2 / this.scale.width), 0.25);
 
                 super.putInBowl(location);
 
@@ -418,8 +419,8 @@ export default class GameScene extends BasicGameScene {
         this.arrowOne.show();
         this.arrowOne.setDirection('right');
         this.arrowOne.setRelativePosition(
-            (this.microscope.x - this.microscope.width) / gameOptions.gameWidth - 0.04,
-            (this.microscope.y + this.microscope.height / 2)/ gameOptions.gameHeight);
+            (this.microscope.x - this.microscope.width) / this.scale.width - 0.04,
+            (this.microscope.y + this.microscope.height / 2)/ this.scale.height);
 
         // go to the next state when the microscope is clicked
         this.events.once(Clicks.MICROSCOPE, () => {
@@ -484,15 +485,15 @@ export default class GameScene extends BasicGameScene {
 
         this.arrowOne.setDirection('left');
         this.arrowOne.setRelativePosition(
-            (this.bowlLeft.x + this.bowlLeft.width / 2) / gameOptions.gameWidth + 0.04,
-            (this.bowlLeft.y) / gameOptions.gameHeight);
+            (this.bowlLeft.x + this.bowlLeft.width / 2) / this.scale.width + 0.04,
+            (this.bowlLeft.y) / this.scale.height);
 
         this.arrowTwo.show();
 
         this.arrowTwo.setDirection('right');
         this.arrowTwo.setRelativePosition(
-            (this.bowlRight.x - this.bowlRight.width / 2) / gameOptions.gameWidth - 0.04,
-            (this.bowlRight.y)/ gameOptions.gameHeight);
+            (this.bowlRight.x - this.bowlRight.width / 2) / this.scale.width - 0.04,
+            (this.bowlRight.y)/ this.scale.height);
 
         // go to the next state when the crystal is placed in a bowl
         this.events.once(Clicks.BOWLLEFT, () => {
@@ -574,8 +575,8 @@ export default class GameScene extends BasicGameScene {
             // place the arrow
             this.arrowOne.setDirection('left');
             this.arrowOne.setRelativePosition(
-                (this.bowlLeft.x + this.bowlLeft.width / 2) / gameOptions.gameWidth + 0.04,
-                (this.bowlLeft.y) / gameOptions.gameHeight);
+                (this.bowlLeft.x + this.bowlLeft.width / 2) / this.scale.width + 0.04,
+                (this.bowlLeft.y) / this.scale.height);
 
         }
         else {
@@ -587,8 +588,8 @@ export default class GameScene extends BasicGameScene {
             // place the arrow
             this.arrowOne.setDirection('right');
             this.arrowOne.setRelativePosition(
-                (this.bowlRight.x - this.bowlRight.width / 2) / gameOptions.gameWidth - 0.04,
-                (this.bowlRight.y)/ gameOptions.gameHeight);
+                (this.bowlRight.x - this.bowlRight.width / 2) / this.scale.width - 0.04,
+                (this.bowlRight.y)/ this.scale.height);
 
         }
 

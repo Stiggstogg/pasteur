@@ -1,4 +1,4 @@
-import { GameObjects } from 'phaser';
+import { GameObjects, Scene } from 'phaser';
 import gameOptions from "../helper/gameOptions";
 
 // Container object with the text for the tutorial
@@ -10,7 +10,7 @@ export default class TextBox extends GameObjects.Container {
     private readonly maxWidth = 0.80;                   // maximum width of the text (relative to the game width)
 
     // Constructor
-    constructor(scene: Phaser.Scene) {
+    constructor(scene: Scene) {
 
         super(scene, 0, 0);
 
@@ -20,8 +20,8 @@ export default class TextBox extends GameObjects.Container {
         // create items
         this.frame = new GameObjects.Rectangle(scene, 0, 0, 100, 100, 0xB24E2A).setOrigin(0);
         this.frame.setStrokeStyle(2, 0x000000);
-        this.text = new GameObjects.BitmapText(scene, gameOptions.gameWidth * this.textPosition.x, gameOptions.gameWidth * this.textPosition.y, 'minogram', 'Text', 10).setOrigin(0).setTint(gameOptions.textColorTutorial);
-        this.text.setMaxWidth(gameOptions.gameWidth * this.maxWidth);
+        this.text = new GameObjects.BitmapText(scene, this.scene.scale.width * this.textPosition.x, this.scene.scale.width * this.textPosition.y, 'minogram', 'Text', 10).setOrigin(0).setTint(gameOptions.textColorTutorial);
+        this.text.setMaxWidth(this.scene.scale.width * this.maxWidth);
 
         // add children
         this.add([this.frame, this.text]);
@@ -31,7 +31,7 @@ export default class TextBox extends GameObjects.Container {
     // position the text box (using relative coordinates)
     positionBox(x: number, y: number) {
 
-        this.setPosition(x * gameOptions.gameWidth, y * gameOptions.gameHeight);
+        this.setPosition(x * this.scene.scale.width, y * this.scene.scale.height);
 
     }
 
@@ -42,7 +42,7 @@ export default class TextBox extends GameObjects.Container {
         this.text.setText(text);
 
         // adjust the frame size
-        this.frame.setSize(this.text.width + 2 * this.textPosition.x * gameOptions.gameWidth, this.text.height + 2 * this.textPosition.y * gameOptions.gameWidth);
+        this.frame.setSize(this.text.width + 2 * this.textPosition.x * this.scene.scale.width, this.text.height + 2 * this.textPosition.y * this.scene.scale.width);
 
         this.setVisible(true);
     }

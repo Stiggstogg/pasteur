@@ -1,20 +1,17 @@
-import Phaser from 'phaser';
-import logoImg from '../assets/images/logo.png';        // logo image
+import { Scene } from 'phaser';
 
 // "Boot" scene: First scene, which is used to load basic (and small) assets for the "Loading" scene
-export default class BootScene extends Phaser.Scene {
+export default class BootScene extends Scene {
 
     constructor() {
-        super({
-            key: 'Boot'
-        });
+        super('Boot');
     }
 
     // load basic asset for "Loading" scene (e.g. logo), this asset should be small
     preload(): void {
 
         // load logo
-        this.load.image('logo', logoImg);
+        this.load.image('logo', 'assets/images/logo.png');
 
     }
 

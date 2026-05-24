@@ -1,17 +1,17 @@
-import Phaser from 'phaser';
+import { Scene, Input, GameObjects, Sound } from 'phaser';
 import gameOptions from "../helper/gameOptions";
 import {BitmapTextStyle} from "../helper/types";
 
 // "Home" scene: Main game menu scene
-export default class HomeScene extends Phaser.Scene {
+export default class HomeScene extends Scene {
 
     private menuEntries!: string[];
     private inactiveStyle!: BitmapTextStyle;
     private activeStyle!: BitmapTextStyle;
     private selected!: number;
-    private items!: Phaser.GameObjects.BitmapText[];
+    private items!: GameObjects.BitmapText[];
     private fading!: boolean;
-    private soundtrack!: Phaser.Sound.WebAudioSound;
+    private soundtrack!: Sound.WebAudioSound;
 
     // Constructor
     constructor() {
@@ -73,8 +73,8 @@ export default class HomeScene extends Phaser.Scene {
     createMenu(menuEntries: string[]): void {
 
         // start position and y space between the entries
-        const start = {x: gameOptions.gameWidth * 0.03, y: gameOptions.gameHeight * 0.6};      // start position
-        const ySpace = gameOptions.gameHeight * 0.13;                                         // ySpace between the entries
+        const start = {x: this.scale.width * 0.03, y: this.scale.height * 0.6};      // start position
+        const ySpace = this.scale.height * 0.13;                                         // ySpace between the entries
 
         // create menu items (loop through each item)
         for (let i = 0;i < menuEntries.length; i++) {
@@ -83,11 +83,11 @@ export default class HomeScene extends Phaser.Scene {
 
             item.setInteractive();          // set interactive
 
-            item.on(Phaser.Input.Events.POINTER_OVER, function(this: HomeScene) : void {        // set event action for mouse over (selecting it)
+            item.on(Input.Events.POINTER_OVER, function(this: HomeScene) : void {        // set event action for mouse over (selecting it)
                 this.selectSpecific(i);
             }, this);
 
-            item.on(Phaser.Input.Events.POINTER_DOWN, function(this: HomeScene) : void {        // set event action for pointer down (clicking it with the mouse)
+            item.on(Input.Events.POINTER_DOWN, function(this: HomeScene) : void {        // set event action for pointer down (clicking it with the mouse)
                 this.selectSpecific(i);          // select the entry (if not already)
                 this.spaceEnterKey();           // click it
             }, this);
@@ -242,10 +242,10 @@ export default class HomeScene extends Phaser.Scene {
     // start the music
     startMusic() {
 
-        this.soundtrack = this.sound.get('soundtrackMenu') as Phaser.Sound.WebAudioSound;
+        this.soundtrack = this.sound.get('soundtrackMenu') as Sound.WebAudioSound;
 
         if (this.soundtrack == null) {              // add it to the sound manager if it isn't yet available
-            this.soundtrack = this.sound.add('soundtrackMenu') as Phaser.Sound.WebAudioSound;
+            this.soundtrack = this.sound.add('soundtrackMenu') as Sound.WebAudioSound;
         }
 
         this.soundtrack.play({

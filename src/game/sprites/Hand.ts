@@ -1,12 +1,12 @@
-import { GameObjects } from 'phaser';
+import { GameObjects, Scene } from 'phaser';
 
 export default class Hand extends GameObjects.Sprite {
 
     public canFlip = false;
-    public front = true;       // if this is true the front is shown
+    public front = true;       // if this is true, the front is shown
     public right: boolean;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, right: boolean) {
+    constructor(scene: Scene, x: number, y: number, right: boolean) {
 
         super(scene, x, y, 'hand', 0);
 
