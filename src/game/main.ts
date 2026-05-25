@@ -24,12 +24,14 @@ const config: Types.Core.GameConfig = {
     backgroundColor: '#000000',
     pixelArt: true,
     scale: {
+        parent: 'canvasContainer',
         mode: Scale.FIT,
         autoCenter: Scale.CENTER_BOTH,
-        max: {
-            width: gameWidth * 1.5,
-            height: gameHeight * 1.5
-        }
+        zoom: Scale.MAX_ZOOM
+        //max: {
+        //    width: gameWidth * 1.5,
+        //    height: gameHeight * 1.5
+        //}
     },
     scene: [
         BootScene,

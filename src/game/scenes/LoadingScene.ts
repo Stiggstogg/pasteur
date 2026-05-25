@@ -84,13 +84,14 @@ export default class LoadingScene extends Scene {
 
         // load fonts
         this.load.bitmapFont('minogram', 'fonts/minogram_6x10.png', 'fonts/minogram_6x10.xml');
+        this.load.bitmapFont('thick', 'fonts/thick_8x8.png', 'fonts/thick_8x8.xml');
 
     }
 
     // Add the animations and change to "Home" scene, directly after loading
     create() {
-        //this.scene.start('Tutorial');       // TODO: Remove after testing (Skips the menu screen)
-        this.scene.start('Home');
+        this.scene.start('Tutorial');       // TODO: Remove after testing (Skips the menu screen)
+        //this.scene.start('Home');
     }
 
 }
