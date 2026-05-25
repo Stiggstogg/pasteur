@@ -23,13 +23,10 @@ const config: Types.Core.GameConfig = {
     canvas: document.getElementById('phaserCanvas') as HTMLCanvasElement,              // id of the phaser canvas element
     backgroundColor: '#000000',
     pixelArt: true,
+    roundPixels: false,
     scale: {
         mode: Scale.FIT,
         autoCenter: Scale.CENTER_BOTH
-        //max: {
-        //    width: gameWidth * 1.5,
-        //    height: gameHeight * 1.5
-        //}
     },
     scene: [
         BootScene,

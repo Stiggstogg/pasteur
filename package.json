@@ -1,7 +1,7 @@
 {
   "name": "pasteur",
   "description": "Pasteur the Game",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "author": "Stiggstogg",
   "license": "MIT",
   "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
@@ -19,7 +19,7 @@
     "vite": "^8.0.14"
   },
   "dependencies": {
-    "phaser": "^4.1.0",
+    "phaser": "^3.80.1",
     "three": "^0.184.0"
   }
 }

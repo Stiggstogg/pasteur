@@ -5,6 +5,7 @@ import {MinMax} from "./types";
 
 type GameOptions = {
     readonly textColorTutorial: number;
+    readonly textShadowSettings: {horizontalOffset: number, verticalOffset: number, color: number, alpha: number};
     readonly weightRange: MinMax;
     readonly lineWidth: number;
     readonly lineColor: number;
@@ -56,6 +57,12 @@ const gameOptions: GameOptions = {
     // ---------------------
 
     textColorTutorial: 0xE1E2A8,   // color of the tutorial text
+    textShadowSettings: {
+        horizontalOffset: 2,
+        verticalOffset: 2,
+        color: 0x000000,
+        alpha: 1
+    },
 
     // ------------------------
     // Bowls

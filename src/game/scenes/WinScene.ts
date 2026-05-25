@@ -33,27 +33,31 @@ export default class WinScene extends Scene {
         this.cameras.main.fadeIn(gameOptions.fadeInOutTime);
         this.soundtrack = this.sound.get('soundtrackGame');         // get the soundtrack
 
+        // background image
+        this.add.image(0, 0, 'win').setOrigin(0);
+        this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000, 0.4).setOrigin(0);
+
         // Texts
-        this.add.bitmapText(0.5 * this.scale.width, this.scale.height * 0.15, 'minogram', 'Congratulations!', 30).setOrigin(0.5);
-        this.add.bitmapText(0.5 * this.scale.width, this.scale.height * 0.30, 'minogram', 'You sorted all crystals', 20).setOrigin(0.5);
+        this.add.bitmapText(0.5 * this.scale.width, this.scale.height * 0.15, 'minogram', 'Congratulations!', 30).setOrigin(0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
+        this.add.bitmapText(0.5 * this.scale.width, this.scale.height * 0.30, 'minogram', 'You sorted all crystals', 20).setOrigin(0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
 
         const startY = 0.45 * this.scale.height;
         const distanceY = 0.1 * this.scale.height;
         let startX = 0.25 * this.scale.width;
 
-        this.add.bitmapText(startX, startY, 'minogram', 'Left bowl:', 20).setOrigin(0, 0.5);
-        this.add.bitmapText(startX, startY + distanceY, 'minogram', 'Right bowl:', 20).setOrigin(0, 0.5);
-        this.add.bitmapText(startX, startY + 2 * distanceY, 'minogram', 'Time:', 20).setOrigin(0, 0.5);
-        this.add.bitmapText(startX, startY + 3 * distanceY, 'minogram', 'Score:', 20).setOrigin(0, 0.5);
+        this.add.bitmapText(startX, startY, 'minogram', 'Left bowl:', 20).setOrigin(0, 0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
+        this.add.bitmapText(startX, startY + distanceY, 'minogram', 'Right bowl:', 20).setOrigin(0, 0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
+        this.add.bitmapText(startX, startY + 2 * distanceY, 'minogram', 'Time:', 20).setOrigin(0, 0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
+        this.add.bitmapText(startX, startY + 3 * distanceY, 'minogram', 'Score:', 20).setOrigin(0, 0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
 
         startX = 0.6 * this.scale.width;
 
-        this.add.bitmapText(startX, startY, 'minogram', this.winData.leftBowlEE.toFixed(0) + ' %ee', 20).setOrigin(0, 0.5);
-        this.add.bitmapText(startX, startY + distanceY, 'minogram', this.winData.rightBowlEE.toFixed(0) + ' %ee', 20).setOrigin(0, 0.5);
-        this.add.bitmapText(startX, startY + 2 * distanceY, 'minogram', this.winData.time, 20).setOrigin(0, 0.5);
-        this.add.bitmapText(startX, startY + 3 * distanceY, 'minogram', this.winData.score.toFixed(0), 20).setOrigin(0, 0.5);
+        this.add.bitmapText(startX, startY, 'minogram', this.winData.leftBowlEE.toFixed(0) + ' %ee', 20).setOrigin(0, 0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
+        this.add.bitmapText(startX, startY + distanceY, 'minogram', this.winData.rightBowlEE.toFixed(0) + ' %ee', 20).setOrigin(0, 0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
+        this.add.bitmapText(startX, startY + 2 * distanceY, 'minogram', this.winData.time, 20).setOrigin(0, 0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
+        this.add.bitmapText(startX, startY + 3 * distanceY, 'minogram', this.winData.score.toFixed(0), 20).setOrigin(0, 0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
 
-        this.add.bitmapText(0.5 * this.scale.width, this.scale.height * 0.9, 'minogram', 'Click anywhere to go back', 10).setOrigin(0.5);
+        this.add.bitmapText(0.5 * this.scale.width, this.scale.height * 0.9, 'minogram', 'Click anywhere to go back', 10).setOrigin(0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
 
         // Click event
         this.input.on('pointerdown', () => {

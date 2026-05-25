@@ -60,6 +60,7 @@ export default class LoadingScene extends Scene {
         this.load.image('title', 'images/title.gif');
         this.load.image('thalidomide', 'images/thalidomide2.png');
         this.load.image('arrow', 'images/arrow.png');
+        this.load.image('win', 'images/win.gif');
 
         // spritesheets
         this.load.spritesheet('head', 'images/heads.png', {frameWidth: 58, frameHeight: 83});
@@ -90,8 +91,9 @@ export default class LoadingScene extends Scene {
 
     // Add the animations and change to "Home" scene, directly after loading
     create() {
-        this.scene.start('Tutorial');       // TODO: Remove after testing (Skips the menu screen)
-        //this.scene.start('Home');
+        //this.scene.start('Tutorial');       // TODO: Remove after testing (Skips the menu screen)
+        //this.scene.start('Win', {leftBowlEE: 100, rightBowlEE: 75, time: '00:35', score: 5236})       // TODO: Remove after testing (Skips the menu screen)
+        this.scene.start('Home');
     }
 
 }

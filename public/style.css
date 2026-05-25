@@ -4,14 +4,17 @@
 }
 
 body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   background-color: black;
 }
 
 /* Style for the parent container which contains both canvases (to have them on top of each other)*/
 #canvasContainer {
   position: relative;
-  width: 100%; /* Set to desired width */
-  height: auto; /* Set to desired height */
+  width: 100vw; /* Set to desired width */
+  height: 100vh; /* Set to desired height */
 }
 
 /* Common style for both canvases */
@@ -19,8 +22,7 @@ canvas {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  image-rendering: pixelated;
 }
 
 /* Optional: Control which canvas is on top, pointer events need to be disabled, as otherwise some pointer events are blocked for the phaser canvas*/

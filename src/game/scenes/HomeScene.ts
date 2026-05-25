@@ -79,7 +79,7 @@ export default class HomeScene extends Scene {
         // create menu items (loop through each item)
         for (let i = 0;i < menuEntries.length; i++) {
 
-            const item = this.add.bitmapText(start.x, start.y + i * ySpace, 'minogram', menuEntries[i], this.inactiveStyle.size).setOrigin(0, 0.5).setTint(this.inactiveStyle.color);
+            const item = this.add.bitmapText(start.x, start.y + i * ySpace, 'minogram', menuEntries[i], this.inactiveStyle.size).setOrigin(0, 0.5).setTint(this.inactiveStyle.color).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, 0x996969, gameOptions.textShadowSettings.alpha);
 
             item.setInteractive();          // set interactive
 

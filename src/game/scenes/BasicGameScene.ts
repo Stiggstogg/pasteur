@@ -211,6 +211,7 @@ export default class BasicGameScene extends Scene {
         //create an external game object, add it to the Phaser scene and ensure it is rendered together with the other objects in the game loop
         const view = this.add.extern();
 
+        // @ts-expect-error
         view.render = () => {
             this.threeRenderer.state.reset();
             this.threeRenderer.render(this.threeScene, this.threeCamera);
@@ -443,7 +444,7 @@ export default class BasicGameScene extends Scene {
 
             // shake the camera in case the average EE got lower
             // --------------------------------------------------
-            if (this.averageEE < previousAverageEE) {
+            if (Math.round(this.averageEE) < Math.round(previousAverageEE)) {                   // the comparison happens with rounded values, as otherwise small noise (1e-9) could lead to a screen shake
                 this.cameras.main.shake(gameOptions.shakeDuration, gameOptions.shakeIntensity);
             }
 
@@ -453,13 +454,13 @@ export default class BasicGameScene extends Scene {
             // check if compared to the previous average EE a change in the face expression should happen (if the average got over a limit
             let change = false;
 
-            if (this.averageEE >= gameOptions.happyFaceLimit && previousAverageEE < gameOptions.happyFaceLimit) {       // check if the average %ee is higher than the happy face limit and the previous average %ee was lower
+            if (Math.round(this.averageEE) >= gameOptions.happyFaceLimit && previousAverageEE < gameOptions.happyFaceLimit) {       // check if the average %ee is higher than the happy face limit and the previous average %ee was lower
                 change = true;
             }
-            else if (this.averageEE <= gameOptions.sadFaceLimit && previousAverageEE > gameOptions.sadFaceLimit) {      // check if the average %ee is lower than the sad face limit and the previous average %ee was higher
+            else if (Math.round(this.averageEE) <= gameOptions.sadFaceLimit && previousAverageEE > gameOptions.sadFaceLimit) {      // check if the average %ee is lower than the sad face limit and the previous average %ee was higher
                 change = true;
             }
-            else if (this.averageEE < gameOptions.happyFaceLimit && this.averageEE > gameOptions.sadFaceLimit && (previousAverageEE >= gameOptions.happyFaceLimit || previousAverageEE <= gameOptions.sadFaceLimit)) {  // check if the average %ee is between the happy and sad face limit and the previous average %ee was either higher than the happy face limit or lower than the sad face limit
+            else if (Math.round(this.averageEE) < gameOptions.happyFaceLimit && this.averageEE > gameOptions.sadFaceLimit && (previousAverageEE >= gameOptions.happyFaceLimit || previousAverageEE <= gameOptions.sadFaceLimit)) {  // check if the average %ee is between the happy and sad face limit and the previous average %ee was either higher than the happy face limit or lower than the sad face limit
                 change = true;
             }
 
