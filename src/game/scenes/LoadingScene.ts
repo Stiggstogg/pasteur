@@ -52,13 +52,15 @@ export default class LoadingScene extends Scene {
         this.load.setPath('./assets/');
 
         // load images
+        this.load.image('title-background', 'images/title-background.gif');
+        this.load.image('title-signature', 'images/title-signature.gif');
+        this.load.image('title-theGame', 'images/title-thegame.gif');
         this.load.image('floor', 'images/floor.png');
         this.load.image('table', 'images/table.png');
         this.load.image('bowlLeft', 'images/bowl-left.gif');
         this.load.image('bowlRight', 'images/bowl-right.gif');
         this.load.image('microscope', 'images/microscope.png');
-        this.load.image('title', 'images/title.gif');
-        this.load.image('thalidomide', 'images/thalidomide2.png');
+        this.load.image('thalidomide', 'images/thalidomide.png');
         this.load.image('arrow', 'images/arrow.png');
         this.load.image('win', 'images/win.gif');
 
@@ -72,9 +74,9 @@ export default class LoadingScene extends Scene {
         this.load.audioSprite('crystalToTable', 'audio/CrystalToTable.json', 'audio/CrystalToTable.mp3');
         this.load.audioSprite('pasteurVoice', 'audio/PasteurVoice.json', 'audio/PasteurVoice.mp3');
 
-        this.load.audio('soundtrackMenu', ['audio/soundtrack_menu.mp3', 'audio/soundtrack_menu.ogg']);
-        this.load.audio('soundtrackGame', ['audio/soundtrack_game.mp3', 'audio/soundtrack_game.ogg']);
-        this.load.audio('soundtrackTutorial', ['audio/soundtrack_game.mp3', 'audio/soundtrack_game.ogg']);          // TODO: Change to tutorial soundtrack as soon as it is available
+        this.load.audio('soundtrackMenu', ['audio/soundtrack_menu.mp3']);
+        this.load.audio('soundtrackGame', ['audio/soundtrack_game.mp3']);
+        this.load.audio('soundtrackTutorial', ['audio/soundtrack_game.mp3']);          // TODO: Change to tutorial soundtrack as soon as it is available
 
         this.load.audio('select', 'audio/select_001.mp3');
         this.load.audio('click', 'audio/click_003.mp3');

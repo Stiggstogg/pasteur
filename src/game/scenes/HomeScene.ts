@@ -12,6 +12,8 @@ export default class HomeScene extends Scene {
     private items!: GameObjects.BitmapText[];
     private fading!: boolean;
     private soundtrack!: Sound.WebAudioSound;
+    private signature!: GameObjects.Image;
+    private theGame!: GameObjects.Image;
 
     // Constructor
     constructor() {
@@ -56,7 +58,9 @@ export default class HomeScene extends Scene {
         this.cameras.main.fadeIn(gameOptions.fadeInOutTime);
 
         // Background
-        this.add.image(0, 0, 'title').setOrigin(0);
+        this.add.image(0, 0, 'title-background').setOrigin(0);
+        this.signature = this.add.image(-this.scale.width, 0, 'title-signature').setOrigin(0);
+        this.theGame = this.add.image(this.scale.width, 0, 'title-theGame').setOrigin(0);
 
         // Create the menu with its entries
         this.createMenu(this.menuEntries);
@@ -66,6 +70,9 @@ export default class HomeScene extends Scene {
 
         // Start the music
         this.startMusic();
+
+        // Move in all objects
+        this.moveInObjects();
 
     }
 
@@ -259,6 +266,32 @@ export default class HomeScene extends Scene {
             volume: [0, gameOptions.soundtrackVolume],
             duration: gameOptions.fadeInOutTime
         });
+
+    }
+
+    // move in objects
+    moveInObjects() {
+
+        this.add.timeline([
+            {
+                at: gameOptions.fadeInOutTime,
+                tween: {
+                    targets: this.signature,
+                    x: 0,
+                    ease: 'Cubic.easeOut',
+                    duration: 750
+                }
+            },
+            {
+                from: 750,
+                tween: {
+                    targets: this.theGame,
+                    x: 0,
+                    ease: 'Cubic.easeOut',
+                    duration: 750
+                }
+            }
+        ]).play();
 
     }
 
