@@ -80,7 +80,7 @@ export default class HomeScene extends Scene {
     createMenu(menuEntries: string[]): void {
 
         // start position and y space between the entries
-        const start = {x: this.scale.width * 0.03, y: this.scale.height * 0.6};      // start position
+        const start = {x: this.scale.width * 1.03, y: this.scale.height * 0.6};      // start position
         const ySpace = this.scale.height * 0.13;                                         // ySpace between the entries
 
         // create menu items (loop through each item)
@@ -290,7 +290,34 @@ export default class HomeScene extends Scene {
                     ease: 'Cubic.easeOut',
                     duration: 750
                 }
-            }
+            },
+            {
+                from: 500,
+                tween: {
+                    targets: this.items[0],
+                    x: 0.03 * this.scale.width,
+                    ease: 'Cubic.easeOut',
+                    duration: 750
+                }
+            },
+            {
+                from: 250,
+                tween: {
+                    targets: this.items[1],
+                    x: 0.03 * this.scale.width,
+                    ease: 'Cubic.easeOut',
+                    duration: 750
+                }
+            },
+            {
+                from: 250,
+                tween: {
+                    targets: this.items[2],
+                    x: 0.03 * this.scale.width,
+                    ease: 'Cubic.easeOut',
+                    duration: 750
+                }
+            },
         ]).play();
 
     }
