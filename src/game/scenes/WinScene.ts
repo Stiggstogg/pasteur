@@ -1,6 +1,7 @@
 import { Scene, Sound, GameObjects } from 'phaser';
 import gameOptions from "../helper/gameOptions";
 import {WinSceneData} from "../helper/types";
+import Continue from '../sprites/Continue.ts';
 
 // "Win" scene: Scene which is shown when you finished the game
 export default class WinScene extends Scene {
@@ -19,6 +20,8 @@ export default class WinScene extends Scene {
     private timeValue!: GameObjects.BitmapText;
     private scoreValue!: GameObjects.BitmapText;
     private clickText!: GameObjects.BitmapText;
+
+    private backButton!: Continue;
 
     // Constructor
     constructor() {
@@ -67,8 +70,24 @@ export default class WinScene extends Scene {
         this.timeValue = this.add.bitmapText(startX, startY + 2 * distanceY, 'minogram', this.winData.time, 20).setOrigin(0, 0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
         this.scoreValue = this.add.bitmapText(startX, startY + 3.7 * distanceY, 'minogram', this.winData.score.toFixed(0), 30).setOrigin(0, 0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
 
-        this.clickText =  this.add.bitmapText(0.33 * this.scale.width, this.scale.height * 1.13, 'minogram', 'Click anywhere to go back', 10).setOrigin(0.5).setDropShadow(gameOptions.textShadowSettings.horizontalOffset, gameOptions.textShadowSettings.verticalOffset, gameOptions.textShadowSettings.color, gameOptions.textShadowSettings.alpha);
+        // add button
+        this.backButton = this.add.existing(new Continue(this));
+        this.backButton.showButton();
+        this.backButton.positionButton(0.78, 1.2);
+        this.backButton.changeText('Back');
 
+        this.backButton.on('continue', () => {
+
+            // disable the button
+            this.backButton.disableInteractive();
+
+            this.cameras.main.fadeOut(gameOptions.fadeInOutTime);       // fade out the screen
+
+            this.cameras.main.once('camerafadeoutcomplete', () => {     // when the fade out is complete
+                this.scene.start('Home');                                          // go back to the home scene
+            });
+
+        });
 
         // move in objects
         this.moveInObjects();
@@ -196,40 +215,15 @@ export default class WinScene extends Scene {
             },
             {
                 from: 500,
-                run: () => {
-                    this.enableClick();
+                tween: {
+                    targets: this.backButton,
+                    y: 0.9 * this.scale.height,
+                    ease: 'Cubic.easeOut',
+                    duration: 500
                 }
-            },
+            }
         ]).play();
 
     }
-
-    enableClick() {
-
-        // Click event
-        this.input.on('pointerdown', () => {
-
-            if (!this.fading) {
-                this.fading = true;         // set fading to true
-
-                this.cameras.main.fadeOut(gameOptions.fadeInOutTime);       // fade out the screen
-
-                // fade out the music
-                this.tweens.add({
-                    targets: this.soundtrack,
-                    volume: 0,
-                    duration: gameOptions.fadeInOutTime
-                });
-
-                this.cameras.main.once('camerafadeoutcomplete', () => {     // when the fade out is complete
-                    this.soundtrack.stop();                                                 // stop the soundtrack
-                    this.scene.start('Home');                                          // go back to the home scene
-                });
-
-            }
-
-        });
-    }
-
 
 }

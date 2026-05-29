@@ -7,6 +7,7 @@ import LoadingScene from './scenes/LoadingScene';
 import HomeScene from './scenes/HomeScene';
 import TutorialScene from './scenes/TutorialScene';
 import GameScene from './scenes/GameScene';
+import CreditsScene from './scenes/CreditsScene';
 import WinScene from './scenes/WinScene';
 
 // define here game width and game height
@@ -34,6 +35,7 @@ const config: Types.Core.GameConfig = {
         HomeScene,
         GameScene,
         TutorialScene,
+        CreditsScene,
         WinScene
     ]
 };

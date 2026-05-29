@@ -64,6 +64,7 @@ export default class LoadingScene extends Scene {
         this.load.image('thalidomide', 'images/thalidomide.png');
         this.load.image('arrow', 'images/arrow-darkred-45.png');
         this.load.image('button', 'images/button-darkred-black.png');
+        this.load.image('credits', 'images/credits-background.gif');
         this.load.image('win', 'images/win.gif');
 
         // spritesheets
@@ -78,7 +79,6 @@ export default class LoadingScene extends Scene {
 
         this.load.audio('soundtrackMenu', ['audio/soundtrack_menu.mp3']);
         this.load.audio('soundtrackGame', ['audio/soundtrack_game.mp3']);
-        this.load.audio('soundtrackTutorial', ['audio/soundtrack_game.mp3']);          // TODO: Change to tutorial soundtrack as soon as it is available
 
         this.load.audio('select', 'audio/select_001.mp3');
         this.load.audio('click', 'audio/click_003.mp3');
@@ -96,6 +96,7 @@ export default class LoadingScene extends Scene {
     // Add the animations and change to "Home" scene, directly after loading
     create() {
         //this.scene.start('Tutorial');       // TODO: Remove after testing (Skips the menu screen)
+        //this.scene.start('Credits');       // TODO: Remove after testing (Skips the menu screen)
         //this.scene.start('Win', {leftBowlEE: 100, rightBowlEE: 75, time: '00:35', score: 5236})       // TODO: Remove after testing (Skips the menu screen)
         this.scene.start('Home');
     }

@@ -28,6 +28,7 @@ export default class Continue extends GameObjects.Container {
         this.setInteractive(new Geom.Rectangle(0, 0, this.button.displayWidth, this.button.displayHeight), Geom.Rectangle.Contains);
         this.on('pointerdown', () => {
             this.emit('continue');
+            this.scene.sound.play('click');
         });
 
     }

@@ -24,7 +24,7 @@ export default class GameScene extends BasicGameScene {
 
     // Constructor
     constructor() {
-        super('Tutorial', 'soundtrackTutorial');
+        super('Tutorial');
     }
 
     // Creates all objects of this scene
@@ -698,13 +698,6 @@ export default class GameScene extends BasicGameScene {
 
             // fade out the sceen
             this.cameras.main.fadeOut(gameOptions.fadeInOutTime);   // fade out the screen
-
-            // fade out the music
-            this.tweens.add({
-                targets: this.soundtrack,
-                volume: 0,
-                duration: gameOptions.fadeInOutTime
-            });
 
             this.cameras.main.once('camerafadeoutcomplete', () => {                                 // change the scene when the screen is faded out
                 this.scene.start('Home');

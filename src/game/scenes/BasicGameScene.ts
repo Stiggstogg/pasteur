@@ -35,16 +35,13 @@ export default class BasicGameScene extends Scene {
     private keyLeft!: Input.Keyboard.Key;            // key Left arrow
     private keyDown!: Input.Keyboard.Key;            // key Down arrow
     private keyRight!: Input.Keyboard.Key;           // key Right arrow
-    private readonly soundtrackKey: string;                 // key of the soundtrack
     protected soundtrack!: Sound.WebAudioSound;        // soundtrack of the game
 
     // Constructor
-    constructor(key: string, musicKey: string) {
+    constructor(key: string) {
         super({
             key: key
         });
-
-        this.soundtrackKey = musicKey;
 
     }
 
@@ -53,7 +50,6 @@ export default class BasicGameScene extends Scene {
 
         // fade in and start the music
         this.cameras.main.fadeIn(gameOptions.fadeInOutTime);
-        this.startMusic();
 
         // initialize parameters
         this.dragging = false;
@@ -551,23 +547,27 @@ export default class BasicGameScene extends Scene {
     // start the music
     startMusic() {
 
-        this.soundtrack = this.sound.get(this.soundtrackKey) as Sound.WebAudioSound;
+        this.soundtrack = this.sound.get('soundtrackGame') as Sound.WebAudioSound;
 
         if (this.soundtrack == null) {              // add it to the sound manager if it isn't yet available
-            this.soundtrack = this.sound.add(this.soundtrackKey) as Sound.WebAudioSound;
+            this.soundtrack = this.sound.add('soundtrackGame') as Sound.WebAudioSound;
         }
 
-        this.soundtrack.play({
-            loop: true,
-            volume: 0
-        });
+        // play the soundtrack if it is not already playing
+        if (!this.soundtrack.isPlaying) {
 
-        // fade in the music
-        this.tweens.add({
-            targets: this.soundtrack,
-            volume: [0, gameOptions.soundtrackVolume],
-            duration: gameOptions.fadeInOutTime
-        })
+            this.soundtrack.play({
+                loop: true,
+                volume: 0
+            });
+
+            // fade in the music
+            this.tweens.add({
+                targets: this.soundtrack,
+                volume: [0, gameOptions.soundtrackVolume],
+                duration: gameOptions.fadeInOutTime
+            })
+        }
 
     }
 

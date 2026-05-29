@@ -2,13 +2,14 @@ import gameOptions from "../helper/gameOptions";
 import Crystal from "../sprites/Crystal";
 import {CrystalLocation} from "../helper/types";
 import BasicGameScene from "./BasicGameScene";
+import {Sound} from 'phaser';
 
 // "Game" scene: Scene for the main game
 export default class GameScene extends BasicGameScene {
 
     // Constructor
     constructor() {
-        super('Game', 'soundtrackGame');
+        super('Game');
     }
 
     // Creates all objects of this scene
@@ -16,6 +17,9 @@ export default class GameScene extends BasicGameScene {
 
         // execute the create function of the parent class
         super.create();
+
+        // start the music
+        super.startMusic();
 
         // create the crystals
         this.createCrystals();

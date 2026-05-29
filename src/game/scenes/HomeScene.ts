@@ -196,12 +196,12 @@ export default class HomeScene extends Scene {
 
             this.sound.play('click');        // play the click sound
 
+            // fade out the screen
+            this.cameras.main.fadeOut(gameOptions.fadeInOutTime);
+            this.fading = true;         // set fading to true
+
             switch(this.selected) {
                 case 0:                 // start the game when the first entry is selected ("Start") (after fading out)
-
-                    // fade out the screen      TODO: Put this before the switch as soon as HowTo and Credits are implemented
-                    this.cameras.main.fadeOut(gameOptions.fadeInOutTime);
-                    this.fading = true;         // set fading to true
 
                     // fade out the music
                     this.tweens.add({
@@ -218,26 +218,14 @@ export default class HomeScene extends Scene {
                     break;
                 case 1:                 // start the "Howto" scene when the "How To Play" entry is selected (after fading out)
 
-                    // fade out the screen      TODO: Put this before the switch as soon as HowTo and Credits are implemented
-                    this.cameras.main.fadeOut(gameOptions.fadeInOutTime);
-                    this.fading = true;         // set fading to true
-
-                    // fade out the music
-                    this.tweens.add({
-                        targets: this.soundtrack,
-                        volume: 0,
-                        duration: gameOptions.fadeInOutTime
-                    });
-
                     this.cameras.main.once('camerafadeoutcomplete', () => {
                         this.scene.start('Tutorial');
-                        this.soundtrack.stop();         // stop the soundtrack
                     });
 
                     break;
                 case 2:                 // start the "Credits" scene when the "How To Play" entry is selected (after fading out)
                     this.cameras.main.once('camerafadeoutcomplete', () => {
-                        console.log("Credits");
+                        this.scene.start('Credits');
                     });
                     break;
             }
@@ -255,17 +243,22 @@ export default class HomeScene extends Scene {
             this.soundtrack = this.sound.add('soundtrackMenu') as Sound.WebAudioSound;
         }
 
-        this.soundtrack.play({
-            loop: true,
-            volume: 0
-        });
+        // play the soundtrack if it is not already playing
+        if (!this.soundtrack.isPlaying) {
 
-        // fade in the music
-        this.tweens.add({
-            targets: this.soundtrack,
-            volume: [0, gameOptions.soundtrackVolume],
-            duration: gameOptions.fadeInOutTime
-        });
+            this.soundtrack.play({
+                loop: true,
+                volume: 0
+            });
+
+            // fade in the music
+            this.tweens.add({
+                targets: this.soundtrack,
+                volume: [0, gameOptions.soundtrackVolume],
+                duration: gameOptions.fadeInOutTime
+            });
+        }
+
 
     }
 
