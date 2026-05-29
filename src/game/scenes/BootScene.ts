@@ -12,6 +12,7 @@ export default class BootScene extends Scene {
 
         // load logo
         this.load.image('logo', 'assets/images/logo.png');
+        this.load.image('boojakascha', 'assets/images/boojakascha.gif');
 
     }
 

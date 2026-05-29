@@ -232,7 +232,7 @@ export default class GameScene extends BasicGameScene {
             'Chirality describes objects that cannot be superimposed onto their mirror images, ' +
             'like your left and right hands.');
 
-        this.textBox.positionBox(0.05, 0.05);
+        this.textBox.positionBox(0.05, 0.04);
 
         // show the hands
         this.handLeft.setVisible(true);
@@ -240,7 +240,7 @@ export default class GameScene extends BasicGameScene {
 
         // show the continue button
         this.continue.showButton();
-        this.continue.positionButton(0.80, 0.72);
+        this.continue.positionButton(0.78, 0.70);
 
     }
 
@@ -319,7 +319,7 @@ export default class GameScene extends BasicGameScene {
         this.thalidomide.setVisible(true);
 
         // show the continue button
-        this.continue.positionButton(0.80, 0.90);
+        this.continue.positionButton(0.78, 0.90);
         this.continue.showButton();
 
     }
@@ -349,7 +349,7 @@ export default class GameScene extends BasicGameScene {
         });
 
         // show the continue button
-        this.continue.positionButton(0.80, 0.80);
+        this.continue.positionButton(0.78, 0.80);
         this.continue.showButton();
 
     }
@@ -373,7 +373,7 @@ export default class GameScene extends BasicGameScene {
             'In front of you are tartrate crystals in two enantiomeric forms.\n\n' +
             'Pick up the first crystal.');
 
-        this.textBox.positionBox(0.05, 0.25);
+        this.textBox.positionBox(0.05, 0.30);
 
         // show the crystals on the table (but activate only one for clicking)
         this.allCrystals.forEach((crystal) => {
@@ -386,7 +386,7 @@ export default class GameScene extends BasicGameScene {
         // show the arrow to indicate the crystal
         this.arrowOne.show();
         this.arrowOne.setDirection('right');
-        this.arrowOne.setRelativePosition(this.allCrystals[0].x - 0.07 , this.allCrystals[0].y);
+        this.arrowOne.setRelativePosition(this.allCrystals[0].x - 0.07 , this.allCrystals[0].y + 0.1);
 
         // go to the next state when the crystal is picked
         this.events.once(Clicks.CRYSTAL, () => {
@@ -420,7 +420,7 @@ export default class GameScene extends BasicGameScene {
         this.arrowOne.setDirection('right');
         this.arrowOne.setRelativePosition(
             (this.microscope.x - this.microscope.width) / this.scale.width - 0.04,
-            (this.microscope.y + this.microscope.height / 2)/ this.scale.height);
+            (this.microscope.y + this.microscope.height / 2)/ this.scale.height + 0.15);
 
         // go to the next state when the microscope is clicked
         this.events.once(Clicks.MICROSCOPE, () => {
@@ -450,7 +450,7 @@ export default class GameScene extends BasicGameScene {
         // show the arrow to indicate the crystal
         this.arrowOne.show();
         this.arrowOne.setDirection('up');
-        this.arrowOne.setRelativePosition(this.allCrystals[1].x, this.allCrystals[1].y + 0.12);
+        this.arrowOne.setRelativePosition(this.allCrystals[1].x + 0.05, this.allCrystals[1].y + 0.12);
 
         // go to the next state when the crystal is picked
         this.events.once(Clicks.CRYSTAL, () => {
@@ -478,7 +478,7 @@ export default class GameScene extends BasicGameScene {
         // show the first text
         this.textBox.showText('Examine it and place this crystal in one of the bowls to sort it out.');
 
-        this.textBox.positionBox(0.05, 0.7);
+        this.textBox.positionBox(0.05, 0.75);
 
         // show the arrows
         this.arrowOne.show();
@@ -486,14 +486,14 @@ export default class GameScene extends BasicGameScene {
         this.arrowOne.setDirection('left');
         this.arrowOne.setRelativePosition(
             (this.bowlLeft.x + this.bowlLeft.width / 2) / this.scale.width + 0.04,
-            (this.bowlLeft.y) / this.scale.height);
+            (this.bowlLeft.y) / this.scale.height - 0.16);
 
         this.arrowTwo.show();
 
         this.arrowTwo.setDirection('right');
         this.arrowTwo.setRelativePosition(
-            (this.bowlRight.x - this.bowlRight.width / 2) / this.scale.width - 0.04,
-            (this.bowlRight.y)/ this.scale.height);
+            (this.bowlRight.x - this.bowlRight.width / 2) / this.scale.width - 0.02,
+            (this.bowlRight.y)/ this.scale.height + 0.17);
 
         // go to the next state when the crystal is placed in a bowl
         this.events.once(Clicks.BOWLLEFT, () => {
@@ -526,7 +526,7 @@ export default class GameScene extends BasicGameScene {
         // show the text
         this.textBox.showText('Now, pick up the first crystal again.');
 
-        this.textBox.positionBox(0.05, 0.25);
+        this.textBox.positionBox(0.05, 0.30);
 
         // Activate the first crystal for clicking
         this.allCrystals[0].activateClickZone();
@@ -534,7 +534,7 @@ export default class GameScene extends BasicGameScene {
         // show the arrow to indicate the crystal
         this.arrowOne.show();
         this.arrowOne.setDirection('right');
-        this.arrowOne.setRelativePosition(this.allCrystals[0].x - 0.07 , this.allCrystals[0].y);
+        this.arrowOne.setRelativePosition(this.allCrystals[0].x - 0.07 , this.allCrystals[0].y + 0.1);
 
         // go to the next state when the crystal is picked
         this.events.once(Clicks.CRYSTAL, () => {
@@ -555,7 +555,7 @@ export default class GameScene extends BasicGameScene {
         // show the first text
         this.textBox.showText('This crystal is the opposite enantiomer compared to the previous one. Place it in the other bowl.');
 
-        this.textBox.positionBox(0.05, 0.7);
+        this.textBox.positionBox(0.05, 0.75);
 
         // deactivate the microscope
         this.microscope.disableInteractive();
@@ -576,7 +576,7 @@ export default class GameScene extends BasicGameScene {
             this.arrowOne.setDirection('left');
             this.arrowOne.setRelativePosition(
                 (this.bowlLeft.x + this.bowlLeft.width / 2) / this.scale.width + 0.04,
-                (this.bowlLeft.y) / this.scale.height);
+                (this.bowlLeft.y) / this.scale.height - 0.16);
 
         }
         else {
@@ -588,8 +588,8 @@ export default class GameScene extends BasicGameScene {
             // place the arrow
             this.arrowOne.setDirection('right');
             this.arrowOne.setRelativePosition(
-                (this.bowlRight.x - this.bowlRight.width / 2) / this.scale.width - 0.04,
-                (this.bowlRight.y)/ this.scale.height);
+                (this.bowlRight.x - this.bowlRight.width / 2) / this.scale.width -0.02,
+                (this.bowlRight.y)/ this.scale.height + 0.17);
 
         }
 
@@ -689,9 +689,9 @@ export default class GameScene extends BasicGameScene {
         super.cleanupScene();
 
         // show the continue button
-        this.continue.changeText('Finish Tutorial >>');
+        this.continue.changeText('Finish');
         this.continue.showButton();
-        this.continue.positionButton(0.7, 0.72);
+        this.continue.positionButton(0.78, 0.70);
 
         // go back to the menu scene when the button is clicked
         this.continue.once('continue', () => {

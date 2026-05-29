@@ -13,21 +13,22 @@ export default class LoadingScene extends Scene {
     // Load all assets (for all scenes)
     preload(): void {
 
-        // show logo
-        this.add.sprite(this.scale.width/2, this.scale.height/2, 'logo').setScale(0.25, 0.25); // logo is already preloaded in 'Boot' scene
+        // show logos
+        this.add.image(this.scale.width * 0.35, this.scale.height * 0.58, 'boojakascha').setScale(0.4).setOrigin(0.5);   // logo is already preloaded in 'Boot' scene
+        this.add.image(this.scale.width * 0.65, this.scale.height * 0.58, 'logo').setScale(0.4).setOrigin(0.5);
 
         // text
-        this.add.text(this.scale.width/2, this.scale.height * 0.20, 'CLOWNGAMING', {fontSize: '40px', color: '#FFFF00', fontStyle: 'bold'}).setOrigin(0.5);
-        this.add.text(this.scale.width/2, this.scale.height * 0.73, 'Loading', {fontSize: '24px', color: '#27FF00'}).setOrigin(0.5);
+        this.add.text(this.scale.width/2, this.scale.height * 0.01, 'Boojakascha\n&\nCLOWNGAMING', {fontSize: '30px', color: '#AAAAAA', fontStyle: 'bold'}).setOrigin(0.5, 0).setAlign('center');
+        this.add.text(this.scale.width/2, this.scale.height * 0.85, 'Loading', {fontSize: '24px', color: '#AAAAAA'}).setOrigin(0.5);
 
         // progress bar background (e.g grey)
         const bgBar = this.add.graphics();
-        const barW = this.scale.width * 0.3;            // progress bar width
-        const barH = barW * 0.1;          // progress bar height
+        const barW = this.scale.width * 0.5;            // progress bar width
+        const barH = barW * 0.07;          // progress bar height
         const barX = this.scale.width / 2 - barW / 2;       // progress bar x coordinate (origin is 0, 0)
-        const barY = this.scale.height * 0.8 - barH / 2   // progress bar y coordinate (origin is 0, 0)
+        const barY = this.scale.height * 0.95 - barH / 2   // progress bar y coordinate (origin is 0, 0)
         bgBar.setPosition(barX, barY);
-        bgBar.fillStyle(0xF5F5F5, 1);
+        bgBar.fillStyle(0x7A0000, 1);
         bgBar.fillRect(0, 0, barW, barH);    // position is 0, 0 as it was already set with ".setPosition()"
 
         // progress bar
@@ -41,7 +42,7 @@ export default class LoadingScene extends Scene {
             progressBar.clear();
 
             // set style
-            progressBar.fillStyle(0x27ff00, 1);
+            progressBar.fillStyle(0xAAAAAA, 1);
 
             // draw rectangle
             progressBar.fillRect(0, 0, value * barW, barH);
@@ -59,9 +60,10 @@ export default class LoadingScene extends Scene {
         this.load.image('table', 'images/table.png');
         this.load.image('bowlLeft', 'images/bowl-left.gif');
         this.load.image('bowlRight', 'images/bowl-right.gif');
-        this.load.image('microscope', 'images/microscope.png');
+        this.load.image('microscope', 'images/microscope_burgunderrot.png');
         this.load.image('thalidomide', 'images/thalidomide.png');
-        this.load.image('arrow', 'images/arrow.png');
+        this.load.image('arrow', 'images/arrow-darkred-45.png');
+        this.load.image('button', 'images/button-darkred-black.png');
         this.load.image('win', 'images/win.gif');
 
         // spritesheets
